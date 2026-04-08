@@ -1,0 +1,12 @@
+decisions/*
+!decisions/.gitkeep
+memories/*
+!memories/.gitkeep
+questions/*
+!questions/.gitkeep
+profiles/leader/*
+!profiles/leader/.gitkeep
+profiles/moonshot/*
+!profiles/moonshot/.gitkeep
+profiles/contrarian/*
+!profiles/contrarian/.gitkeep

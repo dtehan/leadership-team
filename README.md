@@ -1,37 +1,91 @@
-# Leadership Agent team
+# Leadership Team
 
-This repository is using a leadership agent framework to structure executive decision-making. The leader agent synthesizes perspectives from multiple specialist agents (Moonshot, Contrarian, etc.) to make informed, balanced decisions on strategic questions.
+This repository implements a leadership agent framework that structures executive decision-making. A leader agent synthesizes perspectives from multiple specialist agents (Moonshot, Contrarian) to make informed, balanced decisions on strategic questions.
 
-Questions are posed to the leader in a structured format, and the leader follows a disciplined process to deliberate with the specialists, surface disagreements, and arrive at a final decision with clear rationale and next steps.
+Questions are posed to the leader in a structured format. The leader follows a disciplined process: deliberate with specialists, surface disagreements, and arrive at a final decision with clear rationale and next steps. Decision memos are stored in `decisions/`.
 
-Memo's documenting key decisions are stored in the `decisions/` directory.
+Agent prompts are in `.pi/agents/`. Each agent can be augmented with background documents in `profiles/`, which they read and absorb as part of their deliberation. Each agent maintains a memory file in `memories/` — tracking past decisions and peer patterns — allowing the team to learn and adapt over time.
 
-prime.md provides an example of how to prime the leader agent with a decision topic.
+---
 
-The leadership team is describes in the .pi/agents/ directory, we have also allowed for the agents to be augmented with additional background documents in the `profiles/` directory, which the agents can read and absorb as part of their deliberation process.
+## Two Implementations
 
-Each agent will have a memory file in `memories/` where you can store notes on past decisions and patterns of behavior for the specialists. This allows for the agents to learn over time and adapt their deliberation strategies based on what has worked well in the past.
+This repo contains the same deliberation framework implemented on two different orchestration systems. Both share the same agent prompts, profiles, questions, decisions, and memories.
 
-## Extending the framework
-- You can add more specialists with different perspectives (e.g. a CFO for financial implications, a CTO for technical feasibility) by following the pattern in `contrarian.md`.
+| | Pi Framework | Claude Teams |
+|---|---|---|
+| **Orchestrator** | Pi CLI (separate install) | Claude Code (no extra install) |
+| **Leader config** | `.pi/agents/leader.md` | `claude-teams/CLAUDE.md` |
+| **Specialist config** | `.pi/agents/` | Reused from `.pi/agents/` |
+| **Team config** | `leadership.yaml` | Not needed — agents spawned programmatically |
+| **Specialist invocation** | Pi `message` routing between panes | Claude Code `Agent` tool calls |
+| **Parallel broadcast** | Pi native | Two background `Agent` calls in one response |
+| **Shared data** | `profiles/`, `questions/`, `decisions/`, `memories/` | Same directories |
 
-## running the framework
-- You will need [tmux](https://github.com/tmux/tmux) or [iTerm2](https://iterm2.com/) to run the agents in parallel. Each agent will have its own pane where it can read the question, deliberate with the other agents, and write its perspective. The leader agent will have a separate pane where it synthesizes the perspectives and makes the final decision.
+---
 
-- You will need to install pi and two extensions
+## Running with Pi
 
+Pi runs agents as persistent processes in separate terminal panes, routing messages between them via its own orchestration layer.
+
+**Requirements:** [tmux](https://github.com/tmux/tmux) or [iTerm2](https://iterm2.com/), Node.js
+
+**Install:**
 ```bash
 npm install -g @mariozechner/pi-coding-agent
 pi install npm:pi-subagents
 pi install npm:pi-teams
 ```
 
-- to start pi, run `pi` in iTerm2
+**Run from the repo root:**
+1. Start Pi: `pi` in iTerm2
+2. Connect to your model provider: `/login`
+3. Create the team: `create my team named 'leadership' from the 'leadership.yaml' template.`
+4. Submit a question: `send a message to the leader specialist with the following content: questions/ai-factory-monetization-strategy.yaml`
+5. When done: `close down the team`
 
-- type `/login` to connect to your model provider.
+---
 
-- type `create my team named 'leadership' from the 'leadership.yaml' template.` to create the team.
+## Running with Claude Teams
 
-- type `send a message to the leader specialist with the following content: questions/ai-factory-monetization-strategy.yaml` to send the question to the leader specialist and start the deliberation process.
+Claude Teams uses Claude Code's native `Agent` tool to spawn and communicate with specialists. Claude Code itself acts as the leader — no separate orchestration process, no extra installs.
 
-- type `close down the team` to close down the team when you are done.
+**Requirements:** [Claude Code](https://claude.ai/code)
+
+**Run from the `claude-teams/` subdirectory:**
+```bash
+cd claude-teams
+claude
+```
+
+Claude Code loads `CLAUDE.md` automatically, which contains the leader prompt. Submit a question by referencing any file from `questions/`:
+
+```
+Process the question in ../questions/ai-factory-monetization-strategy.yaml
+```
+
+Claude Code will orchestrate the full deliberation — spawning Moonshot and Contrarian as sub-agents, collecting their responses, managing deliberation rounds, and producing the decision memo — all within a single session.
+
+---
+
+## Shared Resources
+
+Both implementations read from and write to the same directories at the repo root:
+
+| Directory | Purpose |
+|---|---|
+| `profiles/` | Agent background identity documents (read-only) |
+| `questions/` | Pending decision topics (YAML format) |
+| `questions/done/` | Processed questions (moved here after each run) |
+| `decisions/` | Decision memos and full deliberation transcripts |
+| `memories/` | Per-agent memory files (past decisions and peer patterns) |
+
+---
+
+## Extending the Framework
+
+Add more specialists (e.g. CFO, CTO) by following the pattern in `.pi/agents/contrarian.md`:
+- Create a new agent file in `.pi/agents/`
+- Add a background document in `profiles/{name}/`
+- Reference the new specialist in both `.pi/agents/leader.md` and `claude-teams/CLAUDE.md`
+- For Pi: add the agent to `leadership.yaml`

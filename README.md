@@ -16,7 +16,7 @@ this template.** The generic starting skeleton is `company-template/`, copied in
 account. A session works on **one account only**: the twins carry that customer's facts, people
 and memory, so switching customer means **starting a new session** (`/clear`, or exit and
 run `claude` again). If you ask for a different customer mid-session, the assistant will
-decline and tell you this. If you want accounts under version control, use a private repo and
+decline and tell you this. A hook (`scripts/account_guard.py`, configured in `.claude/settings.json`) also blocks tool access to any other account's folder once the session is locked; it is a guardrail rather than a security boundary, and you may be asked to approve project hooks the first time. If you want accounts under version control, use a private repo and
 remove `accounts/*` from `.gitignore` there.
 
 ---
@@ -217,7 +217,7 @@ need front-matter with at least a `summary`; see `accounts/<slug>/company/_templ
 | `accounts/<slug>/questions/`, `accounts/<slug>/questions/done/` | Pending and processed questions |
 | `accounts/<slug>/decisions/` | Memos, transcripts, discussions, outcomes |
 | `accounts/<slug>/memories/` | Per-role episodic memory (created as the team runs) |
-| `scripts/` | `build_index.py`, `render_transcript.py` |
+| `scripts/` | `accounts.py` (list/new/lock), `account_guard.py` (session-lock hook), `build_index.py <slug>`, `render_transcript.py` |
 | `.pi/agents/`, `.pi/skills/` | Role prompts and shared skills |
 | `.claude/skills/` | `convene` plus symlinks to the shared skills |
 

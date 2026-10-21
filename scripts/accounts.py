@@ -4,6 +4,7 @@
 Usage:
     python3 scripts/accounts.py list
     python3 scripts/accounts.py new <slug>     # slug: lowercase letters, digits, hyphens
+    python3 scripts/accounts.py lock <slug>    # lock this session to one account (see account_guard.py)
 
 Each account is a self-contained workspace, git-ignored:
     accounts/<slug>/company/     what the twins know (copied from company-template/)
@@ -48,6 +49,13 @@ def main():
         for d in ("questions/done", "decisions", "memories"):
             (dest / d).mkdir(parents=True)
         print(f"Created {dest.relative_to(ROOT)}/ — next, run the company-research skill for this account.")
+    elif cmd == ["lock"] and len(sys.argv) == 3:
+        slug = sys.argv[2]
+        if not (ACCOUNTS / slug).is_dir():
+            sys.exit(f"No account '{slug}'. Run: python3 scripts/accounts.py list")
+        # The PreToolUse hook (scripts/account_guard.py) records the lock for the session
+        # before this runs and refuses a second, different lock.
+        print(f"Session locked to '{slug}' ({brief(slug)}). To work on another customer, start a new session.")
     else:
         sys.exit(__doc__)
 

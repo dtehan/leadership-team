@@ -21,12 +21,25 @@ In every skill and agent prompt, `{account}` means `accounts/{slug}` for the act
    exists, confirm it rather than assuming.
 3. If there are no accounts, or the customer is new, offer
    `python3 scripts/accounts.py new <slug>`, then the **company-research** skill.
-4. Announce the lock in plain words, e.g.:
+4. **Lock it** by running `python3 scripts/accounts.py lock {slug}`. A `PreToolUse` hook
+   (`scripts/account_guard.py`, wired in `.claude/settings.json`) records the lock for this
+   session. Until you do, every tool call that touches any `accounts/*` folder is blocked;
+   afterwards, anything touching a different account is blocked, and a second `lock` with
+   another slug is refused. The lock lives with the session, so `/clear` or a new `claude`
+   starts unlocked.
+5. Announce the lock in plain words, e.g.:
 
    > This session is locked to **{Account name}** (`accounts/{slug}`). To work on a
    > different customer, start a new session (`/clear`, or exit and run `claude` again).
 
 ## 2. Stay locked
+
+The hook enforces this for file tools and (best effort, by matching the command text) for
+Bash. If it blocks you, don't look for a way round it: explain to the user, in plain words,
+that changing customer needs a new session. Do not hide an account name in a variable or
+build a path at run time to dodge the check. Also avoid writing another account's path or
+a wildcard under `accounts/` in command text or heredocs, since the hook matches on the text;
+put such content in a file with the Write tool instead.
 
 - Read and write only under `{account}/`. Never open any other `accounts/*` folder, even to
   compare, borrow a pattern or "check how we handled it elsewhere".

@@ -57,6 +57,7 @@ Prefer recent `as_of` and `confidence: high`.
 
 ### 4. L2 — documents (budgeted)
 - **Opening round**: L0 + your `always` docs + index summaries only. Fast, no drilling.
+- **Guest briefing**: guests are the experts, so drill into every document the question needs. Depth over speed.
 - **Deliberation / final vote**: open at most **5** L2 documents per turn, only
   those that bear on the point you are making. Re-use what you already loaded;
   do not re-read.

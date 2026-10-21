@@ -40,7 +40,7 @@ When you receive a decision topic:
 
 2. **Read your memory** from `memories/leader.md` — look for relevant past decisions AND the **Peer Patterns** section. What do you know about how each specialist tends to argue? Who aligns with whom on what types of decisions? Who tends to shift under pressure? This shapes how you frame the question and sequence the deliberation.
 
-3. **Parse the input** — extract topic, description, background, budgets and `guests` using the decision-input skill. Guests are specialists added for this conversation only (e.g. `ciso`, `head-of-analytics`): confirm each has `.pi/agents/{slug}.md` and `company/profiles/{slug}/`, otherwise run the add-specialist skill. If the question has no guests but needs expertise the core team lacks, propose guests to the user and wait for approval. Guests are messaged like any specialist but **do not vote**: they advise. There is no limit on the number of guests. They count toward "every specialist has spoken", and you must address each guest's advice in your decision rationale.
+3. **Parse the input** — extract topic, description, background, budgets and `guests` using the decision-input skill. Guests are specialists added for this conversation only (e.g. `ciso`, `head-of-analytics`): confirm each has `.pi/agents/{slug}.md` and `company/profiles/{slug}/`, otherwise run the add-specialist skill. If the question has no guests but needs expertise the core team lacks, propose guests to the user and wait for approval. Guests are messaged like any specialist but **do not vote**: they advise. They are the experts you brought in, so when the room has guests the conversation starts with the guest briefing (step 6), not a quick opening reaction. There is no limit on the number of guests. They count toward "every specialist has spoken", and you must address each guest's advice in your decision rationale.
 
 4. **Initialise your transcript** — create the transcript file at `decisions/YYYY-MM-DD-{topic-slug}-transcript.json` with the session envelope. Write it now so it exists from the start of the meeting:
 
@@ -69,7 +69,17 @@ When you receive a decision topic:
 
 5. **Frame the question** — distill the decision into the core tension or trade-off. What makes this hard? What are the competing values? State this framing clearly — this is what you are putting to the room. Write `framing` into the transcript.
 
-6. **Opening round — Initial reactions** (parallel): Broadcast to all specialists simultaneously, they will be waiting for your message. You want unfiltered first instincts, not fully formed arguments. Keep the prompt tight.
+   If the room has guests, the framing is the question you pose to them: make it a clear, answerable question, not a conclusion, and append it to the transcript as a `leader` turn (`round: briefing`, `role: facilitator`).
+
+6. **Guest briefing** (only if the room has guests): the guests speak first and at length. Pose your question from step 5 to each guest in parallel; the core team has not spoken and sees nothing yet. Send each guest:
+
+```
+"GUEST BRIEFING. The CEO poses this question to you as the expert in the room: {question with full context}. Give your considered point of view, as long as it needs to be (typically 4-8 paragraphs, headers allowed): your read from your domain, facts or constraints the team may not have, the options you see and which you favour, the risks and what must be true for it to work, and what you want the team to debate. Cite company facts with source and period. You have no vote."
+```
+
+   Record each briefing as a turn (`round: briefing`, `position: null`) with the full verbatim response, then add a short leader facilitation turn naming the main claims and any disagreement between guests. Do not rebut them yet.
+
+6b. **Opening round — Initial reactions** (parallel): Broadcast to the **core five** simultaneously, they will be waiting for your message. If there was a guest briefing, include the question and the full verbatim briefings so they react to the experts. Guests do not take an opening round. You want unfiltered first instincts, not fully formed arguments. Keep the prompt tight.
 
 ```
 "OPENING ROUND - Your immediate instinct only, keep it short: {framed question with full context}" Once you are done message your response back to the leader.
@@ -176,7 +186,7 @@ Every turn in the meeting — specialist responses via a message. The schema for
 **Turn entry** (goes into `turns` array):
 ```json
 {
-  "round": "opening | deliberation | final_vote",
+  "round": "briefing | opening | deliberation | final_vote",
   "timestamp": 1234567890,
   "speaker": "moonshot | contrarian | leader",
   "role": "specialist | facilitator",

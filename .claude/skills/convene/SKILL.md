@@ -34,8 +34,11 @@ that need them. Decide the room at the start:
 3. List the room in the framing and in the transcript (`session.guests`).
 
 Guests are called exactly like core specialists (same Agent-tool pattern, agent name = slug)
-but **do not vote**. They influence: they speak in the opening round, deliberate, and give a
-final piece of advice. There is no limit on the number of guests. They count toward "everyone
+but **do not vote**. A guest is the expert you brought in, so they do not give a quick
+opening reaction like the core team. When the room has guests, the conversation **starts with
+the guest briefing**: you pose the question, then each guest gives a longer point of view
+before the core team reacts (see step 6). After that they deliberate like everyone else and
+give a final piece of advice. There is no limit on the number of guests. They count toward "everyone
 has spoken at least once". Their weight comes only from the quality of their argument; you
 must address each guest's advice in your decision rationale, and the memo records it.
 
@@ -87,7 +90,7 @@ Orchestrate specialists with the **Agent tool**. For each call:
    - `prompt:` the two skill files + the agent body + your round-specific message
    - Tell the specialist its agent name is `{role}` so profile-context loads `company/profiles/{role}/`. Paths are relative to the repo root (the working directory), no prefixing.
 
-**Parallel broadcast** (opening round and final round): issue one Agent call per person in the room (core five plus any guests) with `run_in_background: true` in a single response. Wait for all to complete before continuing.
+**Parallel broadcast** (guest briefing, opening round and final round): issue one Agent call per person being addressed (guest briefing: the guests; opening round: the core five; final round: core five plus any guests) with `run_in_background: true` in a single response. Wait for all to complete before continuing.
 
 Specialists may end a response with `Context gaps: ...`. Do not edit these out of the transcript; collect them for step 13b.
 
@@ -131,10 +134,33 @@ When you receive a decision topic:
 
 5. **Frame the question** — distill the decision into the core tension or trade-off. What makes this hard? What are the competing values? State this framing clearly — this is what you are putting to the room. Write `framing` into the transcript.
 
-6. **Opening round — Initial reactions** (parallel): Broadcast to all specialists simultaneously using one background Agent call per person in the room, all in a single response. You want unfiltered first instincts, not fully formed arguments. The round-specific message to append to each specialist prompt:
+   **If the room has guests:** the framing is the question you pose to the guests, so make it
+   a clear, answerable question (what we are trying to decide, why it is hard, the
+   constraints), not a conclusion. Append it to the transcript as a `leader` turn with
+   `round: briefing`, `role: facilitator`, and `content` = the question you are posing.
+
+6. **Guest briefing** (only if the room has guests; otherwise skip to 6b). The guests are the experts, so they speak first and at length. Broadcast the question you posed in step 5 to every guest in parallel (one background Agent call per guest, all in a single response). The core team has not spoken yet and does not see anything until the briefings are in. Append to each guest's prompt:
+
+```
+GUEST BRIEFING. The CEO poses this question to you as the expert in the room: {the question from step 5, with full context}
+
+Give your considered point of view, as long as it needs to be (typically 4-8 paragraphs, headers allowed).
+Cover: your read of the situation from your domain, the facts or constraints the leadership team may not
+have, the options you see and which you would favour, the risks and what must be true for it to work, and
+what you would want the team to debate. Cite company facts with source and period. You have no vote; your
+job is to equip the team to decide.
+
+Return your response as your final output — the leader will collect it.
+```
+
+   Record each briefing as a turn (`round: briefing`, `role: specialist`, `position: null`) with the full verbatim response. Then write a short leader facilitation turn (`round: briefing`) naming the main claims and any disagreement between guests. Do not rebut the guests yet.
+
+6b. **Opening round — Initial reactions** (parallel): Broadcast to the **core five** simultaneously using one background Agent call per person, all in a single response. You want unfiltered first instincts, not fully formed arguments. If there was a guest briefing, give each core specialist the question and the full verbatim briefings (labelled by guest) so they are reacting to the experts, and say so in the prompt. Guests do not take an opening round; they already spoke. The round-specific message to append to each specialist prompt:
 
 ```
 OPENING ROUND - Your immediate instinct only, keep it short: {framed question with full context}
+
+{If guests briefed the room: "The guest specialists briefed the room first. Their full briefings: [Guest, Briefing]: {response} ... React to the question and to what they said."}
 
 Return your response as your final output — the leader will collect it.
 ```
@@ -259,7 +285,7 @@ Return your response as your final output — the leader will collect it.
 **Turn entry** (goes into `turns` array):
 ```json
 {
-  "round": "opening | deliberation | final_vote",
+  "round": "briefing | opening | deliberation | final_vote",
   "timestamp": 1234567890,
   "speaker": "leader | cfo | cto | coo | moonshot | contrarian | {guest-slug}",
   "role": "specialist | facilitator",

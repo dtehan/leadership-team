@@ -11,7 +11,7 @@ from pathlib import Path
 
 NAMES = {"leader": "CEO (Leader)", "cfo": "CFO", "cto": "CTO", "coo": "COO",
          "moonshot": "Moonshot", "contrarian": "Contrarian"}
-ROUNDS = {"opening": "Opening round", "deliberation": "Deliberation", "final_vote": "Final vote"}
+ROUNDS = {"briefing": "Guest briefing", "opening": "Opening round", "deliberation": "Deliberation", "final_vote": "Final vote"}
 
 
 def who(s):

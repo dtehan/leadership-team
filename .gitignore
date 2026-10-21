@@ -1,12 +1,16 @@
+.DS_Store
+
+# Run artifacts — local to each account workspace
 decisions/*
 !decisions/.gitkeep
 memories/*
 !memories/.gitkeep
 questions/*
 !questions/.gitkeep
-profiles/leader/*
-!profiles/leader/.gitkeep
-profiles/moonshot/*
-!profiles/moonshot/.gitkeep
-profiles/contrarian/*
-!profiles/contrarian/.gitkeep
+!questions/done/
+questions/done/*
+!questions/done/.gitkeep
+
+# Account knowledge is local to each workspace and never committed to the template.
+# The generic skeleton lives in company-template/ (copied to company/ on setup).
+/company/

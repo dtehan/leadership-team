@@ -22,6 +22,22 @@ version of the topic (e.g., `2026-04-01-european-market-expansion.md`).
 
 ## Specialist Perspectives
 
+### CFO - Financial Reality
+{Summary of the CFO's position and key arguments}
+**Position**: {SUPPORT / OPPOSE / CONDITIONAL}
+
+### CTO - Technical Feasibility
+{Summary of the CTO's position and key arguments}
+**Position**: {SUPPORT / OPPOSE / CONDITIONAL}
+
+### COO - Operational Reality
+{Summary of the COO's position and key arguments}
+**Position**: {SUPPORT / OPPOSE / CONDITIONAL}
+
+### {Guest title} (guest advisor — no vote)
+{One block per guest in the room; omit if none. Summarise their argument and final advice.}
+**How the decision responds**: {accepted / adopted with changes / not adopted, and why}
+
 ### Moonshot - Bold Vision
 {Summary of Moonshot's position and key arguments}
 **Position**: {SUPPORT / OPPOSE / CONDITIONAL}
@@ -53,10 +69,19 @@ version of the topic (e.g., `2026-04-01-european-market-expansion.md`).
 
 {Key risks and how they will be addressed}
 
+## Comparison With Prior Run
+
+{Only for reruns (`rerun_of` set): how this decision differs from the original, what the guests changed or confirmed, and whether any core member's vote moved. Omit otherwise.}
+
+## Open Context Gaps
+
+{Facts the team needed but did not have, from `company/gaps.md` entries raised in this session. "None" if none.}
+
 ## Appendix: Process Metadata
 
 - **Time spent**: {wall-clock duration}
-- **Specialists consulted**: Moonshot, Contrarian
+- **Specialists consulted**: CFO, CTO, COO, Moonshot, Contrarian{, guests}
+- **Full discussion**: `decisions/YYYY-MM-DD-{topic-slug}-discussion.md`
 - **Dissenting opinions**: {which specialists opposed, if any}
 
 ## Appendix: Input

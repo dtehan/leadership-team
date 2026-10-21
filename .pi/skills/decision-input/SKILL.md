@@ -15,6 +15,8 @@ When receiving a decision request, parse it into this structure:
 ## Optional Fields
 - **Urgency**: low / medium / high (default: medium)
 - **Stakeholders**: Who is affected by this decision
+- **Rerun of**: Slug of an earlier decision this question is re-running (set automatically when rerunning; see the convene skill)
+- **Guests**: List of guest-specialist slugs to bring into this conversation (e.g. `[ciso, head-of-analytics]`). They are advisors with no vote, there is no limit on how many, and they are not part of the permanent team. If a slug has no agent/dossier yet, the add-specialist skill sets it up. Omit for core-team-only.
 
 ## Parsing
 
@@ -33,4 +35,5 @@ background: |
   Our product needs GDPR compliance work estimated at 3 months.
   Available budget: $2M for first year.
 urgency: high
+guests: [ciso]
 ```

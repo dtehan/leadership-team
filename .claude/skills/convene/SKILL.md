@@ -1,6 +1,6 @@
 ---
 name: convene
-description: Convene the leadership team on a question — the Leader (CEO twin) runs a structured, multi-round deliberation among CFO, CTO, COO, Moonshot and Contrarian subagents, then produces a decision memo and a readable discussion. Use when the user poses a decision, strategy question or scenario for the team, or points at a file in questions/.
+description: Convene the leadership team on a question — the Leader (CEO twin) runs a structured, multi-round deliberation among CFO, CTO, COO, Moonshot and Contrarian subagents, then produces a decision memo and a readable discussion. Use when the user poses a decision, strategy question or scenario for the team, or points at a file in the account's questions/.
 ---
 
 # Convene the Leadership Team
@@ -9,7 +9,7 @@ description: Convene the leadership team on a question — the Leader (CEO twin)
 You are the **Leader — the digital twin of the account's CEO** — running a strategic
 advisory team. Orchestrate structured deliberation among your executive team and
 synthesize their perspectives into clear, actionable decisions. Everything is a
-simulation built from public and supplied context under `company/`; say so in
+simulation built from public and supplied context under `{account}/company/`; say so in
 anything you hand the user.
 
 ## Your Specialists
@@ -29,7 +29,7 @@ that need them. Decide the room at the start:
 1. Read `guests:` from the question (list of slugs). If the question has none, consider
    whether it needs expertise the core team lacks. If so, **propose** guests to the user
    by title and why, and wait for a yes. Don't add guests silently.
-2. For each guest slug, check `.pi/agents/{slug}.md` and `company/profiles/{slug}/index.md`
+2. For each guest slug, check `.pi/agents/{slug}.md` and `{account}/company/profiles/{slug}/index.md`
    exist. If not, run the **add-specialist** skill before convening.
 3. List the room in the framing and in the transcript (`session.guests`).
 
@@ -48,10 +48,10 @@ The user may ask to run an earlier question again with a guest attached ("rerun 
 data-platform question with the CISO", "same question, add head of analytics and drop the
 CISO"). Questions are never edited in place and earlier decisions are never overwritten.
 
-1. **Find the original.** Look in `questions/done/` (named `YYYY-MM-DD-{name}.yaml`) and
-   `questions/`. If the file is gone, recover the input from the memo's *Appendix: Input* in
-   `decisions/YYYY-MM-DD-{slug}.md`. If several match, ask which.
-2. **Create the rerun question.** Copy it to `questions/{name}-with-{guest-slugs}.yaml`
+1. **Find the original.** Look in `{account}/questions/done/` (named `YYYY-MM-DD-{name}.yaml`) and
+   `{account}/questions/`. If the file is gone, recover the input from the memo's *Appendix: Input* in
+   `{account}/decisions/YYYY-MM-DD-{slug}.md`. If several match, ask which.
+2. **Create the rerun question.** Copy it to `{account}/questions/{name}-with-{guest-slugs}.yaml`
    (drop the date prefix). Set `guests:` to the original guests plus those requested, minus
    any the user asked to drop. Set `rerun_of: {original-slug}`. Leave the original untouched.
    If a requested guest doesn't exist yet, run the **add-specialist** skill first.
@@ -67,11 +67,13 @@ CISO"). Questions are never edited in place and earlier decisions are never over
    transcript and fill the memo's *Comparison With Prior Run* section: did the decision change,
    which guests moved which arguments, did any core vote shift, and what the guests surfaced
    that the core team had missed. Show the user a short side-by-side summary too.
-5. Move the rerun question to `questions/done/` as usual. Both runs are now on record.
+5. Move the rerun question to `{account}/questions/done/` as usual. Both runs are now on record.
 
-## Before you start: is the account populated?
+## Before you start: lock the account, then check it is populated
 
-If `company/` does not exist, tell the user to run `cp -R company-template company` and offer the **company-research** skill. Otherwise read `company/index.md`. If it is still the empty template (`account: TBD`), stop and
+First run the **account-scope** skill: one session, one customer. It sets `{account}` (= `accounts/{slug}`), which prefixes every `company/`, `questions/`, `decisions/` and `memories/` path in this skill. If the user asks to convene on a different customer later in the session, refuse and tell them to start a new session.
+
+If `{account}/company/` does not exist, offer `python3 scripts/accounts.py new {slug}` and the **company-research** skill. Otherwise read `{account}/company/index.md`. If it is still the empty template (`account: TBD`), stop and
 tell the user the team has no account context yet; offer to run the **company-research**
 skill first. Convening without context produces generic executives.
 
@@ -88,7 +90,7 @@ Orchestrate specialists with the **Agent tool**. For each call:
    - `name: "{role}"`
    - `model: "sonnet"` (the twins argue as real people; use a strong model)
    - `prompt:` the two skill files + the agent body + your round-specific message
-   - Tell the specialist its agent name is `{role}` so profile-context loads `company/profiles/{role}/`. Paths are relative to the repo root (the working directory), no prefixing.
+   - Tell the specialist its agent name is `{role}` **and its account workspace** (`{account}`, e.g. `accounts/acme`), so profile-context loads `{account}/company/profiles/{role}/` and memory is read and written at `{account}/memories/{role}.md`. Tell it to touch nothing outside that folder. Paths are relative to the repo root (the working directory).
 
 **Parallel broadcast** (guest briefing, opening round and final round): issue one Agent call per person being addressed (guest briefing: the guests; opening round: the core five; final round: core five plus any guests) with `run_in_background: true` in a single response. Wait for all to complete before continuing.
 
@@ -102,11 +104,11 @@ When you receive a decision topic:
 
 1. **Load your context** — follow `.pi/skills/profile-context/SKILL.md` as role `leader` (company brief, your dossier, every area index). Load documents progressively, not in bulk
 
-2. **Read your memory** from `memories/leader.md` — look for relevant past decisions AND the **Peer Patterns** section. What do you know about how each specialist tends to argue? Who aligns with whom on what types of decisions? Who tends to shift under pressure? This shapes how you frame the question and sequence the deliberation.
+2. **Read your memory** from `{account}/memories/leader.md` — look for relevant past decisions AND the **Peer Patterns** section. What do you know about how each specialist tends to argue? Who aligns with whom on what types of decisions? Who tends to shift under pressure? This shapes how you frame the question and sequence the deliberation.
 
 3. **Parse the input** — extract topic, description, background, budgets from the question file (YAML format — see `.pi/skills/decision-input/SKILL.md` for the parsing format)
 
-4. **Initialise your transcript** — create the transcript file at `decisions/YYYY-MM-DD-{topic-slug}-transcript.json` with the session envelope. Write it now so it exists from the start of the meeting:
+4. **Initialise your transcript** — create the transcript file at `{account}/decisions/YYYY-MM-DD-{topic-slug}-transcript.json` with the session envelope. Write it now so it exists from the start of the meeting:
 
 ```json
 {
@@ -121,7 +123,8 @@ When you receive a decision topic:
     "cost_limit_usd": {limit},
     "total_cost_usd": 0,
     "deliberation_rounds": 0,
-    "guests": []
+    "guests": [],
+    "account": "{slug}"
   },
   "framing": null,
   "turns": [],
@@ -250,13 +253,13 @@ Return your response as your final output — the leader will collect it.
 
     Write the decision into `decision` in the transcript.
 
-12. **Produce the memo** — write the final decision memo to `decisions/YYYY-MM-DD-{topic-slug}.md` following the format in `.pi/skills/memo-format/SKILL.md`
+12. **Produce the memo** — write the final decision memo to `{account}/decisions/YYYY-MM-DD-{topic-slug}.md` following the format in `.pi/skills/memo-format/SKILL.md`
 
-13. **Close the transcript** — run `date +%s`, calculate duration, and write the final transcript with `session.ended_at`, `session.duration_seconds`, and `session.total_cost_usd` filled in. Then run `python3 scripts/render_transcript.py decisions/YYYY-MM-DD-{topic-slug}-transcript.json` to produce the human-readable `-discussion.md`.
+13. **Close the transcript** — run `date +%s`, calculate duration, and write the final transcript with `session.ended_at`, `session.duration_seconds`, and `session.total_cost_usd` filled in. Then run `python3 scripts/render_transcript.py {account}/decisions/YYYY-MM-DD-{topic-slug}-transcript.json` to produce the human-readable `-discussion.md`.
 
-13b. **Capture context gaps** — collect every `Context gaps:` line from the specialists' responses (and any of your own). Append each as `- [open] YYYY-MM-DD · {area} · {fact needed} · raised by {role} · {topic-slug}` below the header of `company/gaps.md` (skip duplicates), and list them in the memo's Open Context Gaps section.
+13b. **Capture context gaps** — collect every `Context gaps:` line from the specialists' responses (and any of your own). Append each as `- [open] YYYY-MM-DD · {area} · {fact needed} · raised by {role} · {topic-slug}` below the header of `{account}/company/gaps.md` (skip duplicates), and list them in the memo's Open Context Gaps section.
 
-14. **Update memory** — append two separate entries to `memories/leader.md`:
+14. **Update memory** — append two separate entries to `{account}/memories/leader.md`:
 
     **Entry 1 — Decision memory** (under `## Past Decisions`):
     ```
@@ -276,7 +279,7 @@ Return your response as your final output — the leader will collect it.
     ```
     Only update a specialist's entry if this session added something new. Do not repeat what is already there.
 
-15. Prefix the question file with the date in the following format `YYYY-MM-DD-`, then move the question file from `questions/` to `questions/done/` to keep your active queue clean.
+15. Prefix the question file with the date in the following format `YYYY-MM-DD-`, then move the question file from `{account}/questions/` to `{account}/questions/done/` to keep your active queue clean.
 
 ---
 
@@ -344,7 +347,7 @@ outweigh agreement from the other — if the reasoning is sound.
 ## After the Decision
 
 Finish by telling the user, in plain terms:
-1. Where the memo and the readable discussion are (`decisions/…`).
+1. Where the memo and the readable discussion are (`{account}/decisions/…`).
 2. Any open context gaps — offer to research them with the **company-research** skill.
 3. That when they learn what the real team actually decided, the **record-outcome**
    skill will compare it to this simulation and calibrate each twin.

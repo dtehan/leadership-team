@@ -8,7 +8,7 @@ description: Instructions for reading and writing agent memory files. Use at the
 ## Reading Memory
 
 At the START of every decision, read your memory file:
-- Your memory file is at `memories/{your-agent-name}.md` (relative to project root)
+- Your memory file is at `{account}/memories/{your-agent-name}.md` (relative to project root)
 - Scan for entries relevant to the current decision topic
 - Pay attention to lessons learned and past positions on similar topics
 - If the file doesn't exist or is empty, proceed without prior context

@@ -6,12 +6,13 @@ description: Required format for CEO decision memos. Use when producing the fina
 # Decision Memo Format
 
 The final output memo must follow this exact structure. Save the memo to
-`decisions/YYYY-MM-DD-{topic-slug}.md` where topic-slug is a kebab-case
+`{account}/decisions/YYYY-MM-DD-{topic-slug}.md` where topic-slug is a kebab-case
 version of the topic (e.g., `2026-04-01-european-market-expansion.md`).
 
 ```markdown
 # Decision Memo: {Topic}
 
+**Account**: {Account name}
 **Date**: {YYYY-MM-DD}
 **Decision**: {One-sentence summary of the decision}
 **Confidence**: {High / Medium / Low}
@@ -75,13 +76,13 @@ version of the topic (e.g., `2026-04-01-european-market-expansion.md`).
 
 ## Open Context Gaps
 
-{Facts the team needed but did not have, from `company/gaps.md` entries raised in this session. "None" if none.}
+{Facts the team needed but did not have, from `{account}/company/gaps.md` entries raised in this session. "None" if none.}
 
 ## Appendix: Process Metadata
 
 - **Time spent**: {wall-clock duration}
 - **Specialists consulted**: CFO, CTO, COO, Moonshot, Contrarian{, guests}
-- **Full discussion**: `decisions/YYYY-MM-DD-{topic-slug}-discussion.md`
+- **Full discussion**: `{account}/decisions/YYYY-MM-DD-{topic-slug}-discussion.md`
 - **Dissenting opinions**: {which specialists opposed, if any}
 
 ## Appendix: Input

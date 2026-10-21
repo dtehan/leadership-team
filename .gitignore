@@ -1,16 +1,7 @@
 .DS_Store
 
-# Run artifacts — local to each account workspace
-decisions/*
-!decisions/.gitkeep
-memories/*
-!memories/.gitkeep
-questions/*
-!questions/.gitkeep
-!questions/done/
-questions/done/*
-!questions/done/.gitkeep
-
-# Account knowledge is local to each workspace and never committed to the template.
-# The generic skeleton lives in company-template/ (copied to company/ on setup).
-/company/
+# Customer account workspaces are local and never committed. Each account holds its own
+# company/ knowledge, questions/, decisions/ and memories/ (see scripts/accounts.py).
+# The generic skeleton for new accounts lives in company-template/.
+accounts/*
+!accounts/.gitkeep

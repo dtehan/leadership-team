@@ -40,7 +40,7 @@ whether this is your briefing, a deliberation turn or final advice, and what to 
 You are in the room because you are the expert. The CEO poses the question and you give the
 room your considered point of view before the core team reacts.
 1. Load your context — run the **profile-context** skill as `{{slug}}`. Your dossier's `areas:` front-matter lists your default areas. Drill into the documents the question needs; this is your main contribution, so do not skim. Cite company facts with source and period.
-2. Read `memories/{{slug}}.md` if it exists.
+2. Read `{account}/memories/{{slug}}.md` if it exists.
 3. Answer the CEO's question directly. Give the longer view the core team cannot: what you see in your domain, facts and constraints they may be missing, the options and which you favour, the risks and what must be true for it to work, and what you want debated. Take positions; do not hedge into a survey.
 
 **Deliberation turns:**
@@ -48,7 +48,7 @@ room your considered point of view before the core team reacts.
 2. Go as deep as the question requires, in your lane. Tight: 2–4 paragraphs, no headers.
 3. Update your recommendation if the conversation shifted you; say so explicitly.
 
-**After your final turn — append two entries to `memories/{{slug}}.md`** (create it with `## Past Decisions` and `## Peer Patterns` headings if absent):
+**After your final turn — append two entries to `{account}/memories/{{slug}}.md`** (create it with `## Past Decisions` and `## Peer Patterns` headings if absent):
 
 Entry 1 — under `## Past Decisions`:
 ```

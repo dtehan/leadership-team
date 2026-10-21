@@ -9,12 +9,15 @@ actually did, and the twins are calibrated.
 > Output is a **simulation** built from public and supplied information. It is not what the
 > real executives said, and it is not a prediction to rely on.
 
-**One workspace per account.** Clone this repo for each account (e.g. `acme-leadership-team`)
-and populate `company/` for that account. **Account data never goes into this template:**
-`company/` and the run artifacts (`decisions/`, `memories/`, `questions/`) are git-ignored.
-The generic starting skeleton is `company-template/`, which you copy to `company/` on setup.
-If you want an account workspace under version control, use a private repo and remove
-`/company/` from `.gitignore` there.
+**One workspace, many customers, one customer per session.** Each customer lives in its own
+folder, `accounts/<slug>/`, holding that customer's `company/` knowledge, `questions/`,
+`decisions/` and `memories/`. All of `accounts/` is git-ignored. **Account data never goes into
+this template.** The generic starting skeleton is `company-template/`, copied into each new
+account. A session works on **one account only**: the twins carry that customer's facts, people
+and memory, so switching customer means **starting a new session** (`/clear`, or exit and
+run `claude` again). If you ask for a different customer mid-session, the assistant will
+decline and tell you this. If you want accounts under version control, use a private repo and
+remove `accounts/*` from `.gitignore` there.
 
 ---
 
@@ -33,7 +36,7 @@ If you want an account workspace under version control, use a private repo and r
 ```bash
 git clone https://github.com/dtehan/leadership-team.git acme-leadership-team
 cd acme-leadership-team
-cp -R company-template company     # create the (git-ignored) account knowledge folder
+python3 scripts/accounts.py new acme   # create accounts/acme/ (git-ignored) from the template
 # optional: point it at your own private remote so nothing goes back to the template
 git remote set-url origin <your-private-repo-url>
 ```
@@ -63,23 +66,23 @@ runs automatically.
 
 ### 1. Populate the account — `company-research`
 
-> *"Bootstrap Acme Corp."* — or *"Ingest this annual report"* (drop files in `company/<area>/sources/`).
+> *"Bootstrap Acme Corp."* — or *"Ingest this annual report"* (drop files in `accounts/<slug>/company/<area>/sources/`).
 
 It collects the 10-K/10-Q/proxy, technology decisions in place and under evaluation, strategy,
 and a dossier per leader; rebuilds the indexes; and lists the questions only you can answer
 (internal knowledge, relationships, politics). **The team refuses to convene on an empty
-account**: `company/index.md` must be populated first.
+account**: `accounts/<slug>/company/index.md` must be populated first.
 
-Then confirm each role's real person: `company/profiles/{leader,cfo,cto,coo}/index.md` should
+Then confirm each role's real person: `accounts/<slug>/company/profiles/{leader,cfo,cto,coo}/index.md` should
 have `person:` and `title:` filled in.
 
 ### 2. Ask a question — `convene`
 
 Either type it (*"Convene the team on: should we pitch a data-platform consolidation to the account
-this quarter?"*) or save a file in `questions/`:
+this quarter?"*) or save a file in `accounts/<slug>/questions/`:
 
 ```yaml
-# questions/data-platform-consolidation.yaml
+# accounts/<slug>/questions/data-platform-consolidation.yaml
 topic: Data platform consolidation pitch
 description: Should we pitch consolidating their data platforms to the CIO this quarter?
 background: |
@@ -89,7 +92,7 @@ stakeholders: CIO, VP Data Engineering   # optional
 guests: [ciso]           # optional guest specialists (see step 4)
 ```
 
-Then: *"Process questions/data-platform-consolidation.yaml."* The Leader frames the question,
+Then: *"Process accounts/<slug>/questions/data-platform-consolidation.yaml."* The Leader frames the question,
 takes opening reactions from all specialists in parallel, runs several deliberation rounds,
 calls a final vote, decides, and writes the outputs. It takes a while; progress shows as it goes.
 
@@ -97,20 +100,20 @@ calls a final vote, decides, and writes the outputs. It takes a while; progress 
 
 | File | What it is |
 |---|---|
-| `decisions/YYYY-MM-DD-{slug}.md` | Decision memo (read this first) |
-| `decisions/YYYY-MM-DD-{slug}-discussion.md` | The whole debate, turn by turn |
-| `decisions/YYYY-MM-DD-{slug}-transcript.json` | Verbatim record |
-| `questions/done/` | The processed question |
+| `accounts/<slug>/decisions/YYYY-MM-DD-{slug}.md` | Decision memo (read this first) |
+| `accounts/<slug>/decisions/YYYY-MM-DD-{slug}-discussion.md` | The whole debate, turn by turn |
+| `accounts/<slug>/decisions/YYYY-MM-DD-{slug}-transcript.json` | Verbatim record |
+| `accounts/<slug>/questions/done/` | The processed question |
 
-Re-render a discussion any time: `python3 scripts/render_transcript.py decisions/<slug>-transcript.json`.
+Re-render a discussion any time: `python3 scripts/render_transcript.py accounts/<slug>/decisions/<slug>-transcript.json`.
 
 ### 4. Bring in a guest specialist — `add-specialist`
 
 > *"Add a head of security to this conversation."*
 
 You are interviewed (title, real person or generic, their lens, what context they need); the
-skill creates their agent (`.pi/agents/<slug>.md`), dossier (`company/profiles/<slug>/`) and, if
-needed, a domain area such as `company/security/`. Guests **advise but do not vote**, any
+skill creates their agent (`.pi/agents/<slug>.md`), dossier (`accounts/<slug>/company/profiles/<slug>/`) and, if
+needed, a domain area such as `accounts/<slug>/company/security/`. Guests **advise but do not vote**, any
 number can join, and they are reusable. List them under `guests:` in a question, or let the
 Leader propose guests when a question needs them.
 
@@ -132,18 +135,18 @@ load it on every future run. Run it against reruns too to see whether a guest im
 
 ### 7. Fill gaps
 
-Twins flag facts they needed and lacked in `company/gaps.md`. *"Work through company/gaps.md."*
+Twins flag facts they needed and lacked in `accounts/<slug>/company/gaps.md`. *"Work through accounts/<slug>/company/gaps.md."*
 runs `company-research` against that list.
 
 ### Maintenance
 
 | Task | How |
 |---|---|
-| Rebuild indexes after editing anything in `company/` | `python3 scripts/build_index.py` |
-| Check documents have summaries/front-matter | `python3 scripts/build_index.py --check` |
+| Rebuild indexes after editing anything in `accounts/<slug>/company/` | `python3 scripts/build_index.py <slug>` |
+| Check documents have summaries/front-matter | `python3 scripts/build_index.py <slug> --check` |
 | Update a document's context | Edit it (keep the front-matter), rebuild indexes |
 | Retire a guest | Delete `.pi/agents/<slug>.md` (keep or remove its dossier and memory) |
-| Reset what the team has learned | Clear `memories/` and `company/profiles/*/calibration.md` |
+| Reset what the team has learned | Clear `accounts/<slug>/memories/` and `accounts/<slug>/company/profiles/*/calibration.md` |
 
 ### Using Pi instead
 
@@ -153,7 +156,7 @@ Same files and skills. Agents are in `.pi/agents/`; `leadership.yaml` defines th
 pi                                   # start in iTerm2/tmux from the repo root
 /login                               # connect your model provider
 create my team named 'leadership' from the 'leadership.yaml' template.
-send a message to the leader specialist with the following content: questions/<file>.yaml
+send a message to the leader specialist with the following content: accounts/<slug>/questions/<file>.yaml
 close down the team                  # when done
 ```
 
@@ -167,14 +170,14 @@ must be started ad hoc by name (they are not in `leadership.yaml`); the Leader
 ## How it works
 
 ```
- company/ (what they know)  ──►  convene  ──►  decisions/  ──►  record-outcome
+ accounts/<slug>/company/ (what they know)  ──►  convene  ──►  accounts/<slug>/decisions/  ──►  record-outcome
    progressive, indexed          core five +      memo,            calibration.md,
-   brief → area → document       CEO leader       discussion       memories/, gaps.md
+   brief → area → document       CEO leader       discussion       accounts/<slug>/memories/, gaps.md
         ▲                        (+ guests)                            │
         └────────────── company-research fills gaps ◄──────────────────┘
 ```
 
-### The account background — `company/`
+### The account background — `accounts/<slug>/company/`
 
 | Folder | Holds |
 |---|---|
@@ -191,7 +194,7 @@ must be started ad hoc by name (they are not in `leadership.yaml`); the Leader
 Every folder has an `index.md` (**L1**) listing its documents with summary, tags, date,
 confidence and which roles should load it. Twins read L0, their own dossier, then only the
 documents the question needs (**L2**); see `.pi/skills/profile-context/SKILL.md`. Documents
-need front-matter with at least a `summary`; see `company/_templates/`.
+need front-matter with at least a `summary`; see `accounts/<slug>/company/_templates/`.
 
 ### Skills
 
@@ -199,7 +202,7 @@ need front-matter with at least a `summary`; see `company/_templates/`.
 |---|---|
 | `convene` *(Claude)* / `leader` agent *(Pi)* | Run the deliberation |
 | `profile-context` | Progressive context loading, for leader and every specialist |
-| `company-research` | Populate/extend `company/`: bootstrap, ingest files, fill gaps, refresh |
+| `company-research` | Populate/extend `accounts/<slug>/company/`: bootstrap, ingest files, fill gaps, refresh |
 | `add-specialist` | Introduce a guest specialist |
 | `record-outcome` | Compare reality to the twins, write calibration |
 | `memory-management` | Each twin's own decision memory and peer patterns |
@@ -209,11 +212,11 @@ need front-matter with at least a `summary`; see `company/_templates/`.
 
 | Directory | Purpose |
 |---|---|
-| `company/` | Account knowledge, **git-ignored** (read-only to twins; written only by `company-research` and `record-outcome`) |
-| `company-template/` | Generic skeleton copied to `company/` on setup (tracked) |
-| `questions/`, `questions/done/` | Pending and processed questions |
-| `decisions/` | Memos, transcripts, discussions, outcomes |
-| `memories/` | Per-role episodic memory (created as the team runs) |
+| `accounts/<slug>/company/` | Account knowledge, **git-ignored** (read-only to twins; written only by `company-research` and `record-outcome`) |
+| `company-template/` | Generic skeleton copied to `accounts/<slug>/company/` on setup (tracked) |
+| `accounts/<slug>/questions/`, `accounts/<slug>/questions/done/` | Pending and processed questions |
+| `accounts/<slug>/decisions/` | Memos, transcripts, discussions, outcomes |
+| `accounts/<slug>/memories/` | Per-role episodic memory (created as the team runs) |
 | `scripts/` | `build_index.py`, `render_transcript.py` |
 | `.pi/agents/`, `.pi/skills/` | Role prompts and shared skills |
 | `.claude/skills/` | `convene` plus symlinks to the shared skills |
@@ -224,9 +227,9 @@ need front-matter with at least a `summary`; see `company/_templates/`.
 
 | Symptom | Cause / fix |
 |---|---|
-| `company/` doesn't exist | Run `cp -R company-template company`, then `company-research`. |
-| Team says the account has no context | `company/index.md` is still the template. Run `company-research`. |
-| Twins sound generic | Dossiers are thin or `person:` is `TBD`. Add `persona.md` and sources; check `company/gaps.md`. |
+| `accounts/<slug>/company/` doesn't exist | Run `python3 scripts/accounts.py new <slug>`, then `company-research`. |
+| Team says the account has no context | `accounts/<slug>/company/index.md` is still the template. Run `company-research`. |
+| Twins sound generic | Dossiers are thin or `person:` is `TBD`. Add `persona.md` and sources; check `accounts/<slug>/company/gaps.md`. |
 | A skill isn't found in Claude | You opened a subfolder, or symlinks didn't survive the clone (see Install). |
-| New documents aren't being used | Indexes are stale. `python3 scripts/build_index.py`. |
-| Guest not available | Needs `.pi/agents/<slug>.md` and `company/profiles/<slug>/`. Run `add-specialist`. |
+| New documents aren't being used | Indexes are stale. `python3 scripts/build_index.py <slug>`. |
+| Guest not available | Needs `.pi/agents/<slug>.md` and `accounts/<slug>/company/profiles/<slug>/`. Run `add-specialist`. |

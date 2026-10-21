@@ -5,13 +5,15 @@ description: Close the learning loop. After the real team decides (or the outcom
 
 # Record Outcome
 
+> **Account scope:** run the **account-scope** skill first. This session works on one customer only; `{account}` = `accounts/{slug}`. Never touch another account; if the user asks to switch customer, tell them to start a new session.
+
 The twins only get better if they are compared to reality. This skill takes
 what the real leadership team actually decided (or how events played out) and
 turns the difference into calibration the twins load next time.
 
 ## Inputs
 
-Ask the user, for the decision in question (list `decisions/*-transcript.json`
+Ask the user, for the decision in question (list `{account}/decisions/*-transcript.json`
 and let them pick if unclear):
 
 1. **What actually happened?** The real decision, or the real outcome so far.
@@ -32,7 +34,7 @@ reality, which is the best evidence of whether a guest is worth including.
 2. For **each role**, compare predicted vs. actual and classify:
    `matched` · `partial` · `missed` · `unknown` (no real-world evidence for that person).
    Write one sentence on *why* — what did the twin overweight or miss?
-3. Write `decisions/YYYY-MM-DD-{slug}-outcome.md` using this format:
+3. Write `{account}/decisions/YYYY-MM-DD-{slug}-outcome.md` using this format:
 
    ```markdown
    # Outcome: {topic}
@@ -45,7 +47,7 @@ reality, which is the best evidence of whether a guest is worth including.
    ```
 
 4. **Update calibration** — for each role with a verdict other than `unknown`,
-   append an entry to `company/profiles/{role}/calibration.md` (create it with
+   append an entry to `{account}/company/profiles/{role}/calibration.md` (create it with
    front-matter `summary: Where past simulations diverged from the real person`,
    `tags: [calibration]`, `load: always`, `roles: [{role}]`):
 
@@ -57,19 +59,19 @@ reality, which is the best evidence of whether a guest is worth including.
    "Standing adjustments" list at the top (e.g. "More cost-sensitive than the
    twin assumes; discounts vendor claims until references are shown").
    Calibration is **stable context** (read via profile-context). It is the only
-   thing outside company research that writes into `company/`.
+   thing outside company research that writes into `{account}/company/`.
 
-5. **Update the leader's memory** — append to `memories/leader.md` under
+5. **Update the leader's memory** — append to `{account}/memories/leader.md` under
    `## Peer Patterns` any change in how reliable each twin was (e.g. "CFO twin
    missed twice on risk appetite — weight with the 2026-03 calibration").
    Do not edit the specialists' own memory files; they write those themselves.
 
 6. **Capture gaps** — if the miss was caused by absent information, add
-   `[open]` lines to `company/gaps.md` and offer to run the company-research
+   `[open]` lines to `{account}/company/gaps.md` and offer to run the company-research
    skill on them. If the dossier is wrong (e.g. outdated role), correct it via
    company-research, not here.
 
-7. Run `python3 scripts/build_index.py` so the new/changed calibration docs appear in the index.
+7. Run `python3 scripts/build_index.py {slug}` so the new/changed calibration docs appear in the index.
 
 8. Summarise to the user: hit rate across roles, the biggest miss and the fix
    applied, and what to look at next time.

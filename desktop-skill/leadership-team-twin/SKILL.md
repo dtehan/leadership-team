@@ -65,15 +65,36 @@ will be generic, and continue.
    (no vote). Show the tally.
 8. **Decision**: the CEO decides, weighing arguments rather than counting votes, and explains
    any overruling of strong dissent.
-9. **Memo**: follow `references/memo-format.md`. Always include the simulation disclaimer.
+9. **Memo**: only now, after the full discussion is on screen, follow `references/memo-format.md`.
+   Always include the simulation disclaimer. The memo summarises; it never replaces the discussion.
 10. **Account-executive takeaways** (always, at the end, after the memo): the three
     objections to prepare for, which executive is the likely champion and which the likely
     blocker, how to reframe the pitch, and the first concrete next step.
-11. Offer the memo as a downloadable file named `{customer}-memo-{YYYY-MM-DD}-{topic}.md`. Tell the user to save it to their Desktop, then upload it to the Project knowledge (then start a new chat)
-    so future runs remember it.
+11. **Offer two downloadable files**, and tell the user to save both to their Desktop, upload
+    them to the Project knowledge and start a new chat so future runs remember them:
+    - the **memo**: `{customer}-memo-{YYYY-MM-DD}-{topic}.md`
+    - the **full discussion**: `{customer}-discussion-{YYYY-MM-DD}-{topic}.md`, the same verbatim
+      transcript you showed in Part 1 (see `references/discussion-format.md`).
 
-Pace: write the debate out in the chat as it unfolds so the user can follow it. Keep individual
-turns short. Quality of argument over length.
+## Output structure: show the conversation, then the memo
+
+The user wants to **read the actual conversation** the team had, not just a summary of it. Every
+convene produces, in this order, in the chat:
+
+1. **Part 1: The discussion.** The complete conversation, turn by turn, in the format in
+   `references/discussion-format.md`: framing, guest briefings, opening round, each deliberation
+   round with the CEO's facilitation notes, final votes and the CEO's decision. Every turn is
+   written out in full, in the speaker's own voice.
+2. **Part 2: The decision memo.**
+3. **Part 3: Account-executive takeaways.**
+
+Rules for the discussion:
+- **Never summarise, shorten or paraphrase the debate in Part 1**, and never write "the team
+  discussed...". If a turn happened, it appears as its own labelled turn with what that person said.
+- Do not skip Part 1 to save length. A long discussion is expected: roughly 20 to 40 turns.
+- Write Part 1 as the debate happens; do not draft a memo first and back-fill a debate afterwards.
+  The memo must be consistent with what the discussion actually shows, including dissent.
+- Do not ask whether the user wants the discussion. They always get it, and the memo after it.
 
 ## Guests
 

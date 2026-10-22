@@ -42,6 +42,9 @@ Use exactly this structure. Write it in the chat; offer it as a downloadable doc
 ## Open Context Gaps
 {facts the team needed and did not have, or "None"}
 
+## Appendix: Full discussion
+See the discussion file `{customer}-discussion-{YYYY-MM-DD}-{topic}.md` (the verbatim conversation).
+
 ## Appendix: Input
 {the question, background, constraints and stakeholders as given}
 ```

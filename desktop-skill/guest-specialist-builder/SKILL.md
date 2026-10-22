@@ -47,7 +47,7 @@ they are reusable. This skill produces the **guest card**: the one document that
 4. **Draft the guest card** from `references/guest-card-template.md`. Show it to the user and ask
    for corrections to the lens, lane and any fact they know to be wrong.
 5. **Hand over**: give the card as a downloadable file (for example `guest-{slug}.md`) and say:
-   "Add this to this customer's Project knowledge. To use them, say, *Convene the team on {question},
+   "Save it to your Desktop, upload it to this customer's Project knowledge and start a new chat. To use them, say, *Convene the team on {question},
    with the {title} attached.*"
 
 ## How the guest behaves in a conversation (so the card is written for it)

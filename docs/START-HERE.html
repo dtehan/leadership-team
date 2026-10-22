@@ -52,6 +52,11 @@
   th { color: var(--muted); font-weight:600; font-size: 13px; text-transform: uppercase; letter-spacing:.05em; }
   .before-after td:first-child { color: var(--muted); }
   .before-after td:last-child { color: var(--ok); font-weight:600; }
+  .routine { border:2px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 18px 0; background: var(--accent-soft); }
+  .routine h3 { margin-top:0; color: var(--accent); }
+  .routine ol { margin: 8px 0 0; padding-left: 22px; }
+  .routine li { margin: 6px 0; }
+  .savebox { border-left: 4px solid var(--ok); background: var(--card); padding: 10px 16px; border-radius: 0 10px 10px 0; margin: 14px 0; }
   footer { margin-top: 64px; padding-top: 20px; border-top:1px solid var(--line); color: var(--muted); font-size: 14px; }
   @media (max-width: 520px) { h1 { font-size: 30px; } }
 </style>
@@ -129,6 +134,37 @@ Never use facts about any other customer.</code></pre></li>
   <li>Start every chat for that customer <b>inside this project</b>.</li>
 </ol>
 
+<h2>The most important habit: save it, then load it back</h2>
+<p class="lede">Claude does not remember one chat in the next. <b>It only knows what is in the project.</b>
+Everything the skills create (the brief, the memos, the guest cards) is a file that
+<b>you save to your computer and then add back to the project</b>. Do this every time.</p>
+
+<table>
+  <tr><th>Skill</th><th>It creates</th><th>File name looks like</th><th>When</th></tr>
+  <tr><td><code>account-brief-builder</code></td><td>The account brief</td><td><code>acme-account-brief-2026-10-22.md</code></td><td>First setup, and every refresh</td></tr>
+  <tr><td><code>leadership-team-twin</code></td><td>Decision memo</td><td>Asks you to save it; name it <code>acme-memo-2026-10-22-topic.md</code></td><td>After each question</td></tr>
+  <tr><td><code>leadership-team-twin</code></td><td>Outcome note</td><td>Name it <code>acme-outcome-2026-10-22-topic.md</code></td><td>When you learn what really happened</td></tr>
+  <tr><td><code>guest-specialist-builder</code></td><td>Guest card</td><td><code>acme-guest-head-of-security.md</code></td><td>When you add a guest</td></tr>
+</table>
+
+<div class="routine">
+  <h3>The routine: 5 steps, every time</h3>
+  <ol>
+    <li><b>Ask Claude for the file.</b> If Claude shows the result only in the chat, reply
+        <i>"Give me that as a downloadable file."</i></li>
+    <li><b>Download it.</b> Click the file's <b>download / save</b> button under Claude's reply.</li>
+    <li><b>Save it to your Desktop</b>, in a folder per customer, for example
+        <code>Desktop / Leadership Team / Acme / </code>. Keep the date in the file name.
+        This folder is your copy and your backup.</li>
+    <li><b>Load it into the project.</b> Open the customer's project, find <b>Project knowledge</b>
+        (the files panel), click <b>+ / Add content → Upload from device</b>, and choose the file from your Desktop folder.</li>
+    <li><b>Delete the old version from the project</b> (briefs only; keep every memo, outcome note and guest card).
+        Then start a <b>new chat</b> in the project, because an open chat won't see the new file.</li>
+  </ol>
+</div>
+<div class="savebox"><b>Check it worked:</b> in a new chat in the project, ask
+<i>"What files do you have for this customer?"</i> The brief, memos, outcome notes and guest cards should be listed.</div>
+
 <h2><span class="n">3</span>Build the account brief (about 10 minutes, once)</h2>
 <p class="lede">In a chat inside the project, type:</p>
 <div class="prompt"><b>You say</b>Set up Acme Corp and build the account brief.<br><small>(uses account-brief-builder)</small></div>
@@ -136,23 +172,25 @@ Never use facts about any other customer.</code></pre></li>
 web search if you have it, or attach the annual report). It then asks a few things only you know: relationships,
 politics, what you have heard in meetings, incumbent vendors. Your answers make the twins much sharper.
 Check the CEO, CFO, CTO and COO names and titles are right.</p>
-<p><b>Then save it:</b> download the brief and add it to the <b>project's knowledge</b> (Project → Add content).
-Every future chat in that project starts with it. Re-add the brief after you update it.</p>
+<div class="savebox"><b>Now save and load it back</b> (routine above): download the brief, save it to
+<code>Desktop / Leadership Team / Acme /</code>, and upload it to the project's knowledge.
+Until you do, the next chat will not know the customer.</div>
 
 <h3>Keep it current</h3>
 <p>Before an important meeting, or every few weeks, open a new chat in the project and type:</p>
 <div class="prompt"><b>You say</b>Refresh the Acme Corp brief. What's changed?<br><small>(uses account-brief-builder)</small></div>
 <p>Claude reads the brief you saved, finds what's new since its date (earnings, leadership changes, announcements,
 technology news), asks what has changed on your side, and gives you an updated brief with a change log. Your own
-account notes are never overwritten by public news. Add the new file to the project and <b>delete the old one</b>.</p>
+account notes are never overwritten by public news. Download the new file, save it next to the old one on your Desktop, upload it to the project, and
+<b>delete the old brief from the project</b>. Then use a new chat.</p>
 
 <h2><span class="n">4</span>Ask the team a question</h2>
 <p class="lede">Plain English is fine. Good questions are decisions or pitches, not trivia.</p>
 <div class="prompt"><b>You say</b>Convene the team on: should we pitch consolidating their three data platforms into one
 analytics foundation this quarter, led by the CIO?</div>
 <p>The debate plays out in the chat: opening reactions, several rounds of argument, a vote, the CEO's decision, a
-one-page <b>decision memo</b> and <b>what to do next as the account executive</b>. Download the memo and add it to
-the project knowledge so the team remembers it next time.</p>
+one-page <b>decision memo</b> and <b>what to do next as the account executive</b>. <div class="savebox"><b>Now save and load it back:</b> ask for the memo as a file, save it to your Desktop
+folder, and upload it to the project. Future questions will read it, so the team remembers earlier decisions.</div>
 
 <h2>A worked example</h2>
 <p class="lede">Illustrative only. <b>"Northwind Retail" is a made-up company</b>, and these are not real executives or real output.
@@ -187,9 +225,9 @@ A real run is longer and uses the customer's actual facts.</p>
 <h2>More things you can ask</h2>
 <table>
   <tr><th>Say</th><th>What happens</th></tr>
-  <tr><td><i>"Add a head of security as a guest."</i></td><td>Defines the guest and their customer context, and gives you a guest card to save in the project. They advise but don't vote.</td></tr>
+  <tr><td><i>"Add a head of security as a guest."</i></td><td>Defines the guest and their customer context, and gives you a guest card. <b>Save it and load it into the project</b>. They advise but don't vote.</td></tr>
   <tr><td><i>"Run that again with the head of security attached."</i></td><td>A fresh debate. See how the decision changes.</td></tr>
-  <tr><td><i>"The customer actually deferred it to Q2. Record the outcome."</i></td><td>The twins are compared with reality. Save the note into the project and they learn from it.</td></tr>
+  <tr><td><i>"The customer actually deferred it to Q2. Record the outcome."</i></td><td>The twins are compared with reality. <b>Save the note and load it into the project</b> and they learn from it.</td></tr>
   <tr><td><i>"Work through the gaps list."</i></td><td>Researches the facts the twins said they were missing.</td></tr>
 </table>
 
@@ -201,14 +239,15 @@ A real run is longer and uses the customer's actual facts.</p>
       cleared to use with Claude. Follow Teradata's AI-use policy.</li>
   <li><b>Public, professional facts only</b> about real people.</li>
   <li><b>Treat output as a rehearsal.</b> Never quote it as what the customer said or will do.</li>
-  <li><b>It only remembers what you save.</b> Claude chats don't carry over, so add each brief, memo and outcome note
-      to the project knowledge.</li>
+  <li><b>It only remembers what you save and load back.</b> Claude chats don't carry over. Download every brief,
+      memo, outcome note and guest card, keep it in your Desktop folder, and upload it to the project.</li>
 </ul>
 
 <h2>If something goes wrong</h2>
 <table>
   <tr><th>Problem</th><th>Fix</th></tr>
   <tr><td>Claude doesn't seem to use the team</td><td>Check all three skills are switched on in Settings → Capabilities → Skills, and name the skill in your message.</td></tr>
+  <tr><td>Claude acts as if it never saw the brief or an earlier memo</td><td>The file isn't in the project, or you are in an old chat. Check Project knowledge, upload it, and start a new chat.</td></tr>
   <tr><td>The twins sound generic</td><td>The account brief is missing or thin. Add it to the project knowledge, attach an annual report, and answer the questions about the account.</td></tr>
   <tr><td>It names facts you don't recognise</td><td>Ask "what is the source?" and correct the brief. Anything unsourced should be listed as a context gap.</td></tr>
   <tr><td>It won't continue because you named another customer</td><td>Working as designed. Open that customer's project and start a new chat there.</td></tr>

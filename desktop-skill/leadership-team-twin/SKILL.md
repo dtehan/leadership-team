@@ -69,7 +69,7 @@ will be generic, and continue.
 10. **Account-executive takeaways** (always, at the end, after the memo): the three
     objections to prepare for, which executive is the likely champion and which the likely
     blocker, how to reframe the pitch, and the first concrete next step.
-11. Offer to save the memo (a document or file) for the user to add to the Project knowledge
+11. Offer the memo as a downloadable file named `{customer}-memo-{YYYY-MM-DD}-{topic}.md`. Tell the user to save it to their Desktop, then upload it to the Project knowledge (then start a new chat)
     so future runs remember it.
 
 Pace: write the debate out in the chat as it unfolds so the user can follow it. Keep individual
@@ -96,7 +96,7 @@ When the user reports what the real team decided or how events played out:
    adjustments (for example "more cost-sensitive than the twin assumes").
 4. Do not over-fit: one miss is a note; a pattern across two or three decisions becomes a
    standing adjustment.
-5. Tell the user to add the note to the Project knowledge. Future convenes must read it and
+5. Give the note as a downloadable file named `{customer}-outcome-{YYYY-MM-DD}-{topic}.md`. Tell the user to save it to their Desktop, upload it to the Project knowledge and start a new chat. Future convenes must read it and
    apply the adjustments.
 
 ## Output standards

@@ -64,7 +64,7 @@ produces generic executives, so spend your effort here.
    section names at least one in-place and one evaluating item or says none were found. List every
    gap.
 6. **Hand over**: give the brief as a downloadable file (for example `{customer}-account-brief.md`)
-   and say: "Add this to this customer's Project knowledge. Re-add it when you update it, and delete
+   and say: "Save it to your Desktop (for example `Desktop/Leadership Team/{customer}/`), then upload it to this customer's Project knowledge, and start a new chat so it is picked up. Re-add it when you update it, and delete
    the old copy so the twins don't read two versions."
 
 ## Ingest
@@ -111,7 +111,7 @@ before a meeting). It updates the existing brief rather than starting again.
    or opened. Update `As of`. Keep the log to the last 10 entries.
 6. **Hand over** the updated brief as a file named `{customer}-account-brief-{YYYY-MM-DD}.md`, with
    a three to five line summary of the most important changes for the next conversation. Say:
-   "Add this to the Project knowledge and **delete the older brief** so the twins don't read two
+   "Save it next to the old one on your Desktop, upload it to the Project knowledge and **delete the older brief** so the twins don't read two
    versions. Start a new chat for your next question so it picks up the new version."
 7. **Tell the user what it means for past work**: if a change would alter an earlier decision memo
    (for example a new CFO), name that memo and offer to run the question again on the updated brief.

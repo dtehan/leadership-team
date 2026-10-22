@@ -8,3 +8,6 @@ accounts/*
 
 # Per-session account locks written by scripts/account_guard.py
 .claude/account-locks/
+
+# Built packages (scripts/package.py)
+dist/

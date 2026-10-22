@@ -49,6 +49,12 @@ Symlinks work on macOS/Linux; on Windows enable Developer Mode and
 (Desktop: Code tab → choose the folder; CLI: run `claude` from the repo root, **not** a subfolder).
 Claude loads `CLAUDE.md` and the skills automatically.
 
+**Sending it to account managers (Claude Desktop, no Code tab):** run `python3 scripts/package.py`. It writes
+one zip per skill in `desktop-skill/` (brief builder, team, guest builder) plus `START-HERE.html`, all in `dist/`.
+Send them all. They upload each zip under Settings > Capabilities > Skills and make one Claude Project per customer.
+The guide's source is `docs/START-HERE.html`. For Claude Code users, `python3 scripts/package.py --code` builds the
+folder tool zip instead (no customer data, symlinks flattened).
+
 **Pi (secondary)**
 
 ```bash

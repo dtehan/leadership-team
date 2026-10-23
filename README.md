@@ -2,10 +2,10 @@
 
 Simulation tools are an interesting way for us to explore the dynamics of leadership teams and how they make decisions.  The goal is to provide a tool that can be used to explore the tradeoffs and concerns that a leadership team would have when making decisions.  This can be used to inform our own actions and decisions.  As you build greater context of the organization, the people, and the memories of past discussions, your simulations will become richer.  The intent of this project is not to predict the future, rather to prepare you to understand different futures. 
 
-A digital twin of an organizations's leadership team, note that it is not titles but people you r are trying to simulate, I have chosen specific roles, however these can be modified. 
+A digital twin of an organization's leadership team. Note that it is not titles but people you are trying to simulate; I have chosen specific roles, however these can be modified.
 Pose a question to the core team and read the debate the CEO, CFO, CTO and COO — plus a Moonshot and a Contrarian (added to ensure that there are diverse perspectives) — would have about it, then get a decision memo. 
-Many leadership teams are bringing in Specialists such as a head of security to enrich a specific conversations. So you can add a guest specialist with a complete back story, we use specialists to educate the leadership team on a specific topic and be a part of the discussion, but they do not vote.
-As the leadership team learns: memorys of past discussions can be added to the memory so that future decisions have visibility to their past, each decision can later be compared with what the real team actually did, and the twins are calibrated.
+Many leadership teams are bringing in Specialists such as a head of security to enrich a specific conversation. You can add a guest specialist with a complete back story; we use specialists to educate the leadership team on a specific topic and be a part of the discussion, but they do not vote.
+The leadership team learns: memories of past discussions can be added so that future decisions have visibility to their past, each decision can later be compared with what the real team actually did, and the twins are calibrated.
 
 
 The value is in **what the team would say and why**, not in the decision itself. 
@@ -14,11 +14,11 @@ The value is in **what the team would say and why**, not in the decision itself.
 > real executives said, and it is not a prediction to rely on.
 
 
-There is two versions of the implementation:
-1. Claude Desktop: A skills l variation of the above, with a zip file per skill and a `START-HEAR.html` guide.  This big difference is that the desktop version does not support subagents, and the user need to manage the memory via files within a project.
-2. Claude Code: a Claude Project with the skills and a skeleton account template. It runs in the Claude Code CLI or Desktop (Code tab). The twins are in `.claude/skills/` and `.pi/skills/`.  This leverages subagents.
+There are two versions of the implementation:
+1. Claude Desktop: A skills-based variation of the above, with a zip file per skill and a `START-HERE.html` guide.  The big difference is that the desktop version does not support subagents, and the user needs to manage the memory via files within a project.
+2. Claude Code: a project with the skills and a skeleton account template. It runs in the Claude Code CLI or Desktop (Code tab). The twins are in `.claude/skills/` and `.pi/skills/`.  This leverages subagents.
 
-In building this project I have focused on the claude code version and then had to make tradeoffs for the claude chat version.
+In building this project I have focused on the Claude Code version and then had to make tradeoffs for the Claude Desktop version.
 
 
 

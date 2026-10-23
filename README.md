@@ -3,8 +3,11 @@
 Simulation tools are an interesting way for us to explore the dynamics of leadership teams and how they make decisions.  The goal is to provide a tool that can be used to explore the tradeoffs and concerns that a leadership team would have when making decisions.  This can be used to inform our own actions and decisions.  As you build greater context of the organization, the people, and the memories of past discussions, your simulations will become richer.  The intent of this project is not to predict the future, rather to prepare you to understand different futures. 
 
 A digital twin of an organization's leadership team. Note that it is not titles but people you are trying to simulate; I have chosen specific roles, however these can be modified.
+
 Pose a question to the core team and read the debate the CEO, CFO, CTO and COO — plus a Moonshot and a Contrarian (added to ensure that there are diverse perspectives) — would have about it, then get a decision memo. 
+
 Many leadership teams are bringing in Specialists such as a head of security to enrich a specific conversation. You can add a guest specialist with a complete back story; we use specialists to educate the leadership team on a specific topic and be a part of the discussion, but they do not vote.
+
 The leadership team learns: memories of past discussions can be added so that future decisions have visibility to their past, each decision can later be compared with what the real team actually did, and the twins are calibrated.
 
 

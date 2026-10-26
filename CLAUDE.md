@@ -25,6 +25,9 @@ public and user-supplied context — never present it as what the real people sa
 | Set up or enrich the account background (10-Ks, tech stack, leader dossiers) | `company-research` skill |
 | Bring in a specialist who isn't on the core team (security, analytics...) | `add-specialist` skill, then list them under `guests:` in the question |
 | Tell the team what the real people actually decided | `record-outcome` skill |
+| Build a twin of a team of managers (who is in it, link their profiles) | `define-group` skill (`python3 scripts/groups.py ...`) |
+| Ask a defined group a question / run a scenario | `convene-group` skill (the roster replaces the fixed C-suite) |
+| Tell a group what the real managers actually decided | `record-group-outcome` skill |
 | See a past discussion | open `{account}/decisions/*-discussion.md` (or run `scripts/render_transcript.py` on a transcript) |
 
 If the user just types a question with no instruction, run account-scope, then treat it as a request to convene.
@@ -36,9 +39,11 @@ If the user just types a question with no instruction, run account-scope, then t
   - `questions/` — pending questions (YAML or free text); `questions/done/` once processed.
   - `decisions/` — memos, transcripts (`-transcript.json`), discussions (`-discussion.md`), outcomes (`-outcome.md`).
   - `memories/{role}.md` — each twin's own episodic memory (past decisions, peer patterns) **for this account**.
+  - `groups/{group}/` — optional **working groups** (e.g. middle management) made with `define-group`: `roster.md` (who is in the group, chair, escalation, each member's profile link) plus the group's own `questions/`, `decisions/`, `memories/`. Member dossiers live in `company/profiles/{member-slug}/` (`type: member`). Groups share the account's `company/` and sit under the same one-account lock.
 - `company-template/` — generic skeleton copied into each new account (tracked; no account facts).
 - `.pi/agents/` — role prompts. `.pi/skills/` — shared skills (symlinked into `.claude/skills/`).
 - `scripts/accounts.py` — `list` accounts, `new <slug>` creates a workspace from the template, `lock <slug>` locks the session to one account.
+- `scripts/groups.py` — `list`/`new`/`add`/`link`/`check` for working groups inside an account (roster and profile links). `.pi/agents/group-chair.md` and `group-member.md` are the generic seats a roster is instantiated into.
 - `scripts/account_guard.py` — the hook (see `.claude/settings.json`) that enforces the one-account-per-session lock.
 - `scripts/build_index.py {slug}` — rebuilds every `accounts/{slug}/company/**/index.md` from document front-matter. Run it after adding or changing any document under `{account}/company/`.
 

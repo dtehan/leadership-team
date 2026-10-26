@@ -8,6 +8,8 @@ Pose a question to the core team and read the debate the CEO, CFO, CTO and COO �
 
 Many leadership teams are bringing in Specialists such as a head of security to enrich a specific conversation. You can add a guest specialist with a complete back story; we use specialists to educate the leadership team on a specific topic and be a part of the discussion, but they do not vote.
 
+Not every decision is made in the boardroom. You can also define a **working group**, such as a team of middle managers, by listing who is in it and linking each person's profile. The group deliberates the same way (chair, rounds, vote, memo) and learns the same way. See [Working groups](#8-working-groups-middle-management--define-group-convene-group) and the one-page [user guide](docs/GROUPS-USER-GUIDE.md) (Claude Code version; the Desktop version has its own group skills, see below).
+
 The leadership team learns: memories of past discussions can be added so that future decisions have visibility to their past, each decision can later be compared with what the real team actually did, and the twins are calibrated.
 
 
@@ -38,6 +40,10 @@ Follow the instructions in the `dist/START-HERE.html` file.  This will install t
 3. Create an initial organization brief via a chat with the account-brief-builder skill.  This will generate a markdown file that will need to be saved into your project context.
 4. Add any additional information to the project context that you want the team to have access to.
 5. Ask a question via the convene skill.  This will generate a decision memo and a discussion transcript.  If you want to maintain a memory of decisions then you will need to add the memo to the project context.
+
+6. **Optional: a team of managers.** Install the two group skills as well. Ask `management-group-builder` to define the group (who is in it, chair, who it escalates to) and build a profile for each member; it produces a **group card** to save into the project. Then ask `management-group-twin` to convene the group on a question, and to record the outcome later. Save each memo, discussion and outcome note into the project as above. The executive twins are not in a group's room. See the "A team of managers" section of `dist/START-HERE.html`.
+
+Desktop skills (`desktop-skill/`): `account-brief-builder`, `leadership-team-twin`, `guest-specialist-builder`, `management-group-builder`, `management-group-twin`. Without scripts or a filesystem, the roster and the profile links live in the group card instead of `roster.md`.
 
 ### The value
 The value is in **what the team would say and why**, not in the decision itself.  Use the discussion to understand the concerns that a leadership team would have and the tradeoffs they would consider.  Use this insight to inform your own actions.
@@ -183,6 +189,36 @@ load it on every future run. Run it against reruns too to see whether a guest im
 Twins flag facts they needed and lacked in `accounts/<slug>/company/gaps.md`. *"Work through accounts/<slug>/company/gaps.md."*
 runs `company-research` against that list.
 
+#### 8. Working groups (middle management) — `define-group`, `convene-group`
+
+Quick start: [docs/GROUPS-USER-GUIDE.md](docs/GROUPS-USER-GUIDE.md).
+
+A **group** is any team you define inside an account (data platform leads, regional directors, a
+change board). It does not replace the leadership team; it is a second room with its own cast.
+It lives at `accounts/<slug>/groups/<group>/` and has its own `roster.md`, `questions/`,
+`decisions/` and `memories/`. It shares the account's `company/` knowledge and the same
+one-account-per-session lock.
+
+> *"Define a group called data-platform for this account. Priya Nair, Director of Data Engineering,
+> reports to the CTO and chairs it; Sam Ortiz, Head of Procurement; Lee Chen, Security Manager, as an advisor."*
+
+- **Who is in the group** is `roster.md`: purpose, chair (a member, or `neutral`), who the group
+  escalates to, an optional Contrarian/Moonshot, and one row per member. A member marked
+  advisor speaks but does not vote.
+- **Linking profiles**: each row has a `profile` link. Blank means `company/profiles/<member>/` (a stub
+  is created for you to research); or point at an existing dossier folder or file inside the
+  account, or a URL. `python3 scripts/groups.py check <slug> <group>` shows the roster and which
+  profiles are thin. Twins with thin profiles are generic, so research them with `company-research`.
+- **Ask a question**: *"Convene the data-platform group on: …"* or save a file in
+  `accounts/<slug>/groups/<group>/questions/`. It takes the same format as a leadership question, plus an
+  optional `attendees: [priya-nair, sam-ortiz]` to call only some members.
+- **Results** appear in `accounts/<slug>/groups/<group>/decisions/`. The memo says whether the group
+  decided or is recommending escalation, and what the decision asks of each team.
+- **Teach it**: *"Record the outcome for the data-platform group's decision: …"* (`record-group-outcome`).
+
+Management groups do not include the C-suite twins. A member's `reports_to` (e.g. `cto`) only
+shapes how that member thinks, since they read that executive's dossier summary.
+
 #### Maintenance
 
 | Task | How |
@@ -251,6 +287,9 @@ need front-matter with at least a `summary`; see `accounts/<slug>/company/_templ
 | `add-specialist` | Introduce a guest specialist |
 | `record-outcome` | Compare reality to the twins, write calibration |
 | `memory-management` | Each twin's own decision memory and peer patterns |
+| `define-group` | Define a working group: roster, chair, escalation, linked member profiles |
+| `convene-group` | Run a deliberation for a defined group (same flow as `convene`) |
+| `record-group-outcome` | Compare reality to a group's twins, write calibration |
 | `decision-input`, `memo-format` | Question and memo formats |
 
 #### Directories
@@ -262,8 +301,9 @@ need front-matter with at least a `summary`; see `accounts/<slug>/company/_templ
 | `accounts/<slug>/questions/`, `accounts/<slug>/questions/done/` | Pending and processed questions |
 | `accounts/<slug>/decisions/` | Memos, transcripts, discussions, outcomes |
 | `accounts/<slug>/memories/` | Per-role episodic memory (created as the team runs) |
-| `scripts/` | `accounts.py` (list/new/lock), `account_guard.py` (session-lock hook), `build_index.py <slug>`, `render_transcript.py` |
-| `.pi/agents/`, `.pi/skills/` | Role prompts and shared skills |
+| `accounts/<slug>/groups/<group>/` | A working group: `roster.md`, `questions/`, `decisions/`, `memories/` |
+| `scripts/` | `accounts.py` (list/new/lock), `groups.py` (list/new/add/link/check), `account_guard.py` (session-lock hook), `build_index.py <slug>`, `render_transcript.py` |
+| `.pi/agents/`, `.pi/skills/` | Role prompts and shared skills (`group-chair.md` and `group-member.md` are the generic group seats) |
 | `.claude/skills/` | `convene` plus symlinks to the shared skills |
 
 ---
@@ -278,5 +318,8 @@ need front-matter with at least a `summary`; see `accounts/<slug>/company/_templ
 | A skill isn't found in Claude | You opened a subfolder, or symlinks didn't survive the clone (see Install). |
 | New documents aren't being used | Indexes are stale. `python3 scripts/build_index.py <slug>`. |
 | Guest not available | Needs `.pi/agents/<slug>.md` and `accounts/<slug>/company/profiles/<slug>/`. Run `add-specialist`. |
+| Group twins sound generic | Member profiles are stubs or bare links. Run `python3 scripts/groups.py check <slug> <group>`, then `company-research` on those members. |
+| `No group '<group>'` | Create it with `python3 scripts/groups.py new <slug> <group>` or run `define-group`. |
+| Can't add a member called `cfo` (or `cto`, `coo`, ...) | Leadership role names are reserved. Use the person's name as the slug, e.g. `priya-nair`. |
 
 

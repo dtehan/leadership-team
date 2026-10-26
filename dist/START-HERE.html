@@ -107,17 +107,19 @@ a customer or to put words in their mouths.</div>
 
 <h2><span class="n">1</span>Install the skill (about 2 minutes, once)</h2>
 <p class="lede">You need <b>Claude Desktop</b>, signed in. Nothing else to install.</p>
-<p>You were sent three skill zips. Each does one job:</p>
+<p>You were sent five skill zips. The first three are the core; the last two are optional and are for simulating a team of managers (see "A team of managers" below). Each does one job:</p>
 <table>
   <tr><th>Zip</th><th>What it does</th></tr>
   <tr><td><code>account-brief-builder</code></td><td>Builds the customer's account brief from public research and your own knowledge.</td></tr>
   <tr><td><code>leadership-team-twin</code></td><td>Runs the debate and writes the decision memo. Also records what the customer really decided.</td></tr>
   <tr><td><code>guest-specialist-builder</code></td><td>Defines a guest expert (security, analytics...) for a customer.</td></tr>
+  <tr><td><code>management-group-builder</code></td><td><i>Optional.</i> Defines a team of managers (who is in it, their profiles) and gives you a group card.</td></tr>
+  <tr><td><code>management-group-twin</code></td><td><i>Optional.</i> Runs the debate for that team of managers and writes the memo. Also records what the group really decided.</td></tr>
 </table>
 <ol>
-  <li>Save the three zips. <b>Do not unzip them.</b></li>
+  <li>Save the zips. <b>Do not unzip them.</b></li>
   <li>In Claude Desktop open <b>Settings → Capabilities → Skills</b> and choose <b>Upload skill</b>. Pick a zip. Repeat for each.</li>
-  <li>Switch all three <b>on</b>.</li>
+  <li>Switch them all <b>on</b>.</li>
 </ol>
 <div class="note"><b>Don't see Skills?</b> Skills need "code execution and file creation" switched on in
 Capabilities. On a Team or Enterprise plan your Claude admin may have to allow skills first. Ask them, and
@@ -146,6 +148,8 @@ Everything the skills create (the brief, the memos, the guest cards) is a file t
   <tr><td><code>leadership-team-twin</code></td><td>Decision memo</td><td>Asks you to save it; name it <code>acme-memo-2026-10-22-topic.md</code></td><td>After each question</td></tr>
   <tr><td><code>leadership-team-twin</code></td><td>Outcome note</td><td>Name it <code>acme-outcome-2026-10-22-topic.md</code></td><td>When you learn what really happened</td></tr>
   <tr><td><code>guest-specialist-builder</code></td><td>Guest card</td><td><code>acme-guest-head-of-security.md</code></td><td>When you add a guest</td></tr>
+  <tr><td><code>management-group-builder</code></td><td>Group card (roster and member profiles)</td><td><code>acme-group-data-platform.md</code></td><td>When you define or change a group</td></tr>
+  <tr><td><code>management-group-twin</code></td><td>Group memo, discussion and outcome note</td><td><code>acme-data-platform-memo-2026-10-22-topic.md</code></td><td>After each group question</td></tr>
 </table>
 
 <div class="routine">
@@ -233,6 +237,33 @@ A real run is longer and uses the customer's actual facts.</p>
   <tr><td><i>"Work through the gaps list."</i></td><td>Researches the facts the twins said they were missing.</td></tr>
 </table>
 
+<h2>A team of managers (optional)</h2>
+<p class="lede">Not every decision is made in the boardroom. You can also simulate a <b>team of managers</b> at the customer,
+for example the data platform leads, regional directors or a change board. You say who is in it and give each person a
+profile; the debate then works just like the executive one. It needs the two optional skills, and it does
+<b>not</b> include the CEO, CFO, CTO or COO twins.</p>
+
+<h3>Step 1: Define the group (about 10 minutes, once)</h3>
+<div class="prompt"><b>You say</b>Define a group called data-platform for Acme. Priya Nair, Director of Data Engineering, reports to
+the CTO and chairs it. Sam Ortiz, Head of Procurement. Lee Chen, Security Manager, as an advisor. It escalates to the CTO.<br><small>(uses management-group-builder)</small></div>
+<p>Claude asks what it is missing: the group's purpose, who chairs (a member, or a neutral facilitator), whether to
+include a Contrarian (recommended), and who is an advisor with no vote. For each person it builds a profile from what you
+give it: a pasted bio or CV, a web page, public sources, and what only you know about how they work. Where little is public it
+says so and uses the role in general terms, so a thin profile gives a more generic twin.</p>
+<div class="savebox"><b>Now save and load it back</b> (routine above): download the <b>group card</b>
+(<code>acme-group-data-platform.md</code>), save it to your Desktop folder, and upload it to the project.
+To change the group later (add a member, make someone chair), ask, then replace the old card with the new one.</div>
+
+<h3>Step 2: Ask the group a question</h3>
+<div class="prompt"><b>You say</b>Convene the data-platform group on: should we standardise on one ingestion tool this year?<br><small>(uses management-group-twin)</small></div>
+<p>To call only some members, say so (<i>"Just Priya and Sam."</i>). You get the same three things as before: the full
+discussion, the memo, then your account-executive takeaways. The memo also says what the decision asks of each team and whether
+the group could decide this itself or is <b>recommending escalation</b>. Save the memo and discussion and upload them to the project.</p>
+
+<h3>Step 3: Teach it</h3>
+<div class="prompt"><b>You say</b>The data-platform group actually waited until Q2 because procurement blocked it. Record the outcome.</div>
+<p>Each member's twin is compared with reality, and you get an outcome note to save and load back.</p>
+
 <h2>Ground rules</h2>
 <ul>
   <li><b>One customer, one project, one chat.</b> For a different customer, open that customer's project. The skill
@@ -248,7 +279,7 @@ A real run is longer and uses the customer's actual facts.</p>
 <h2>If something goes wrong</h2>
 <table>
   <tr><th>Problem</th><th>Fix</th></tr>
-  <tr><td>Claude doesn't seem to use the team</td><td>Check all three skills are switched on in Settings → Capabilities → Skills, and name the skill in your message.</td></tr>
+  <tr><td>Claude doesn't seem to use the team</td><td>Check all your skills are switched on in Settings → Capabilities → Skills, and name the skill in your message.</td></tr>
   <tr><td>Claude acts as if it never saw the brief or an earlier memo</td><td>The file isn't in the project, or you are in an old chat. Check Project knowledge, upload it, and start a new chat.</td></tr>
   <tr><td>The twins sound generic</td><td>The account brief is missing or thin. Add it to the project knowledge, attach an annual report, and answer the questions about the account.</td></tr>
   <tr><td>It names facts you don't recognise</td><td>Ask "what is the source?" and correct the brief. Anything unsourced should be listed as a context gap.</td></tr>

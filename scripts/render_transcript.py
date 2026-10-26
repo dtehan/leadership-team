@@ -12,10 +12,14 @@ from pathlib import Path
 NAMES = {"leader": "CEO (Leader)", "cfo": "CFO", "cto": "CTO", "coo": "COO",
          "moonshot": "Moonshot", "contrarian": "Contrarian"}
 ROUNDS = {"briefing": "Guest briefing", "opening": "Opening round", "deliberation": "Deliberation", "final_vote": "Final vote"}
+NAMES["chair"] = "Chair"
+
+
+SPEAKERS = {}  # slug -> display name, filled from session.roster (group transcripts)
 
 
 def who(s):
-    return NAMES.get(s, s.title())
+    return SPEAKERS.get(s) or NAMES.get(s, s.title())
 
 
 def cell(v):
@@ -26,9 +30,11 @@ def main(path):
     src = Path(path)
     t = json.loads(src.read_text(encoding="utf-8"))
     s = t.get("session", {})
+    SPEAKERS.update(s.get("roster") or {})
+    kind = s.get("group_name") or "the leadership team"
     out = [f"# Discussion: {s.get('topic', src.stem)}", "",
            f"*{s.get('date', '')} · {s.get('deliberation_rounds', 0)} deliberation rounds · "
-           "simulation of the leadership team, not statements by real people*", ""]
+           f"simulation of {kind}, not statements by real people*", ""]
     if t.get("framing"):
         out += ["## Framing", "", t["framing"], ""]
     current = None

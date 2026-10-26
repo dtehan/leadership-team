@@ -95,6 +95,9 @@ def check_bash(cmd, lock):
     m = re.search(rf"build_index\.py\s+({SLUG})\b", cmd)
     if m:
         check_slug(m.group(1), lock)
+    m = re.search(rf"groups\.py\s+(?:list|new|add|link|check)\s+({SLUG})\b", cmd)
+    if m:
+        check_slug(m.group(1), lock)
     m = re.search(rf"accounts\.py\s+new\s+({SLUG})\b", cmd)
     if m and lock is not None and m.group(1) != lock:
         deny(f"this session is locked to '{lock}'. {NEW_SESSION}")

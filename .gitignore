@@ -1,12 +1,16 @@
 .DS_Store
 
 # Customer account workspaces are local and never committed. Each account holds its own
-# company/ knowledge, questions/, decisions/ and memories/ (see scripts/accounts.py).
+# company/ knowledge and named teams/ (see scripts/accounts.py).
 # The generic skeleton for new accounts lives in company-template/.
 accounts/*
 !accounts/.gitkeep
 
-# Per-session account locks written by scripts/account_guard.py
-.claude/account-locks/
+# Local Copilot state and pre-conversion session state.
+.copilot/
+.copilot-tracking/
+__pycache__/
+*.pyc
+
 
 

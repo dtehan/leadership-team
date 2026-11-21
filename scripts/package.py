@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
-"""Build the packages to send to account managers.
+"""Build a Copilot CLI workspace ZIP without traversing customer data.
 
 Usage:
-    python3 scripts/package.py            # Claude Desktop: one zip per skill in desktop-skill/ + START-HERE.html
-    python3 scripts/package.py --code     # Claude Code folder tool: dist/leadership-team-<version>.zip
+    python3 scripts/package.py
+    python3 scripts/package.py --output-dir <directory>
 
-Desktop package (default): each skill in desktop-skill/, uploaded one by one under
-Settings > Capabilities > Skills, plus the how-to guide. No scripts, hooks or folders needed;
-one Claude Project per customer is the account boundary.
-
-Code package (--code) contains the tool only: skills, agents, scripts, the company template and the
-START-HERE.html guide. It never contains customer data (accounts/*), git history, session
-locks or caches. Symlinks (.claude/skills -> .pi/skills) are written as real files so the
-zip works on any OS and with any unzip tool.
+Only explicitly selected shared assets are packaged. Skill and template resources are
+Markdown files; customer folders, local state, symlinks and unrelated files are not inputs.
 """
+import argparse
 import datetime
-import os
 import subprocess
-import sys
 import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 FOLDER = "leadership-team"
-SKIP_DIRS = {".git", "dist", "__pycache__", "account-locks", "node_modules"}
-SKIP_FILES = {".DS_Store"}
+SHARED_FILES = (
+    ".github/copilot-instructions.md",
+    ".github/agents/leadership-specialist.agent.md",
+    ".gitignore", "README.md", "LICENSE", "docs/TEAMS-USER-GUIDE.md",
+    "scripts/accounts.py", "scripts/teams.py", "scripts/profiles.py",
+    "scripts/build_index.py", "scripts/render_transcript.py", "scripts/package.py",
+    "tests/test_package.py", "tests/test_workspace.py", "tests/test_teams.py",
+    "tests/test_profiles.py",
+)
+RESOURCE_DIRS = (".github/skills", "company-template")
 
 
 def version():
@@ -38,60 +39,58 @@ def version():
         return day
 
 
-def files():
-    for dirpath, dirnames, filenames in os.walk(ROOT, followlinks=True):
-        rel = Path(dirpath).relative_to(ROOT)
-        dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS)
-        if rel.parts[:1] == ("accounts",):
-            dirnames[:] = []          # never descend into customer data
+def checked(path):
+    for candidate in (path, *path.parents):
+        if candidate == ROOT:
+            break
+        if candidate.is_symlink():
+            raise ValueError(f"Package input must not be a symlink: {candidate}")
+    return path
+
+
+def resources(directory):
+    for path in sorted(checked(directory).iterdir()):
+        checked(path)
+        if path.name.startswith(".") or path.name == "__pycache__":
             continue
-        for name in sorted(filenames):
-            if name in SKIP_FILES or name.endswith(".pyc"):
-                continue
-            yield rel / name
+        if path.is_dir():
+            yield from resources(path)
+        elif path.suffix == ".md":
+            yield path.relative_to(ROOT)
 
 
-def build_desktop():
-    skills_dir = ROOT / "desktop-skill"
-    guide = ROOT / "docs" / "START-HERE.html"
-    skills = sorted(d for d in skills_dir.iterdir() if (d / "SKILL.md").exists()) if skills_dir.exists() else []
-    if not skills or not guide.exists():
-        sys.exit("no skills under desktop-skill/ or docs/START-HERE.html is missing")
-    DIST.mkdir(exist_ok=True)
-    for old in DIST.glob("*.zip"):
-        old.unlink()
-    for skill in skills:
-        out = DIST / f"{skill.name}.zip"
-        n = 0
-        with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-            for src in sorted(p for p in skill.rglob("*") if p.is_file() and p.name not in SKIP_FILES):
-                z.write(src, f"{skill.name}/{src.relative_to(skill).as_posix()}")
-                n += 1
-        print(f"{out.relative_to(ROOT)}  ({n} files, {out.stat().st_size // 1024} KB)")
-    (DIST / "START-HERE.html").write_bytes(guide.read_bytes())
-    print("dist/START-HERE.html")
-    print(f"Send all {len(skills) + 1} files. Recipients read START-HERE.html and upload each zip (without unzipping) as a skill.")
+def files():
+    for name in SHARED_FILES:
+        path = checked(ROOT / name)
+        if not path.is_file():
+            raise ValueError(f"Required package input is missing: {name}")
+        yield Path(name)
+    for name in RESOURCE_DIRS:
+        yield from resources(ROOT / name)
 
 
 def main():
-    if "--code" not in sys.argv[1:]:
-        return build_desktop()
-    if not (ROOT / "docs" / "START-HERE.html").exists():
-        sys.exit("docs/START-HERE.html is missing")
-    DIST.mkdir(exist_ok=True)
-    out = DIST / f"leadership-team-{version()}.zip"
-    n = 0
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, default=DIST)
+    args = parser.parse_args()
+    try:
+        inputs = list(files())
+        output = args.output_dir.resolve()
+        customer_root = ROOT.resolve() / "accounts"
+        if output == customer_root or customer_root in output.parents:
+            parser.error("output directory must be outside customer workspaces")
+        output.mkdir(parents=True, exist_ok=True)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+    out = output / f"leadership-team-{version()}.zip"
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        for rel in files():
+        for rel in inputs:
             src = ROOT / rel
             info = zipfile.ZipInfo.from_file(src, f"{FOLDER}/{rel.as_posix()}")
             info.compress_type = zipfile.ZIP_DEFLATED
             z.writestr(info, src.read_bytes())
-            n += 1
-        z.write(ROOT / "docs" / "START-HERE.html", f"{FOLDER}/START-HERE.html")
-        z.writestr(f"{FOLDER}/accounts/.gitkeep", "")
-    print(f"{out.relative_to(ROOT)}  ({n + 1} files, {out.stat().st_size // 1024} KB)")
-    print("Send this one file. Recipients open START-HERE.html inside the unzipped folder.")
+    print(f"{out}  ({len(inputs)} files, {out.stat().st_size // 1024} KB)")
+    print("Extract the ZIP, read README.md, then run copilot from the extracted folder.")
 
 
 if __name__ == "__main__":

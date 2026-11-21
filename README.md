@@ -1,325 +1,342 @@
-# Leadership Team — Digital Twin
+# Leadership Team - Digital Twins for Copilot CLI
 
-Simulation tools are an interesting way for us to explore the dynamics of leadership teams and how they make decisions.  The goal is to provide a tool that can be used to explore the tradeoffs and concerns that a leadership team would have when making decisions.  This can be used to inform our own actions and decisions.  As you build greater context of the organization, the people, and the memories of past discussions, your simulations will become richer.  The intent of this project is not to predict the future, rather to prepare you to understand different futures. 
+Explore how a customer's teams might reason about a decision using **GitHub
+Copilot CLI**. Define named teams from reusable profiles: core leadership,
+extended leadership, DBAs or any other professional team. Each has one leader
+and participants who vote or advise. Optional Contrarian/Moonshot perspectives
+challenge the room without pretending to be real people.
 
-A digital twin of an organization's leadership team. Note that it is not titles but people you are trying to simulate; I have chosen specific roles, however these can be modified.
+**All output is a simulation based on public and supplied information, never
+statements or predictions by the real people.** The value is in the arguments,
+trade-offs and dissent, not a prediction.
 
-Pose a question to the core team and read the debate the CEO, CFO, CTO and COO — plus a Moonshot and a Contrarian (added to ensure that there are diverse perspectives) — would have about it, then get a decision memo. 
+## Start here
 
-Many leadership teams are bringing in Specialists such as a head of security to enrich a specific conversation. You can add a guest specialist with a complete back story; we use specialists to educate the leadership team on a specific topic and be a part of the discussion, but they do not vote.
+1. Install the requirements and launch Copilot from the repository root.
+2. Select or create one account and build its company context and profiles.
+3. Define a named team with a leader and participants from those profiles.
+4. Ask that team to deliberate; read its memo alongside the discussion.
+5. Record what actually happened to improve future simulations.
 
-Not every decision is made in the boardroom. You can also define a **working group**, such as a team of middle managers, by listing who is in it and linking each person's profile. The group deliberates the same way (chair, rounds, vote, memo) and learns the same way. See [Working groups](#8-working-groups-middle-management--define-group-convene-group) and the one-page [user guide](docs/GROUPS-USER-GUIDE.md) (Claude Code version; the Desktop version has its own group skills, see below).
+Open the [setup and operations handbook](docs/USER-GUIDE.html) in a browser for
+company and people profiles, team creation, maintenance, and diagrams explaining
+when to brainstorm, evaluate or scope.
 
-The leadership team learns: memories of past discussions can be added so that future decisions have visibility to their past, each decision can later be compared with what the real team actually did, and the twins are calibrated.
+For a proposed adaptation to another agent platform, see the
+[Claude Code and Pi porting guide](docs/PORTING-GUIDE.md). These ports are not
+implemented or supported by the current repository.
 
+## Requirements and setup
 
-The value is in **what the team would say and why**, not in the decision itself. 
-
-> Output is a **simulation** built from public and supplied information. It is not what the
-> real executives said, and it is not a prediction to rely on.
-
-
-There are two versions of the implementation:
-1. Claude Desktop: A skills-based variation of the above, with a zip file per skill and a `START-HERE.html` guide.  The big difference is that the desktop version does not support subagents, and the user needs to manage the memory via files within a project.
-2. Claude Code: a project with the skills and a skeleton account template. It runs in the Claude Code CLI or Desktop (Code tab). The twins are in `.claude/skills/` and `.pi/skills/`.  This leverages subagents.
-
-In building this project I have focused on the Claude Code version and then had to make tradeoffs for the Claude Desktop version.
-
-
-
-----
-
-## Claude Desktop Version
-
-### Installation
-Follow the instructions in the `dist/START-HERE.html` file.  This will install the skills and provide a guide to using them.
-
-### Usage
-1. Install the skills
-2. Create a project in claude desktop chat for each organization you want to simulate.
-3. Create an initial organization brief via a chat with the account-brief-builder skill.  This will generate a markdown file that will need to be saved into your project context.
-4. Add any additional information to the project context that you want the team to have access to.
-5. Ask a question via the convene skill.  This will generate a decision memo and a discussion transcript.  If you want to maintain a memory of decisions then you will need to add the memo to the project context.
-
-6. **Optional: a team of managers.** Install the two group skills as well. Ask `management-group-builder` to define the group (who is in it, chair, who it escalates to) and build a profile for each member; it produces a **group card** to save into the project. Then ask `management-group-twin` to convene the group on a question, and to record the outcome later. Save each memo, discussion and outcome note into the project as above. The executive twins are not in a group's room. See the "A team of managers" section of `dist/START-HERE.html`.
-
-Desktop skills (`desktop-skill/`): `account-brief-builder`, `leadership-team-twin`, `guest-specialist-builder`, `management-group-builder`, `management-group-twin`. Without scripts or a filesystem, the roster and the profile links live in the group card instead of `roster.md`.
-
-### The value
-The value is in **what the team would say and why**, not in the decision itself.  Use the discussion to understand the concerns that a leadership team would have and the tradeoffs they would consider.  Use this insight to inform your own actions.
-
-
-
-
-----
-## Claude Code version
-
-**One workspace, many customers, one customer per session.** Each customer lives in its own
-folder, `accounts/<slug>/`, holding that customer's `company/` knowledge, `questions/`,
-`decisions/` and `memories/`. All of `accounts/` is git-ignored. **Account data never goes into
-this template.** The generic starting skeleton is `company-template/`, copied into each new
-account. A session works on **one account only**: the twins carry that customer's facts, people
-and memory, so switching customer means **starting a new session** (`/clear`, or exit and
-run `claude` again). If you ask for a different customer mid-session, the assistant will
-decline and tell you this. A hook (`scripts/account_guard.py`, configured in `.claude/settings.json`) also blocks tool access to any other account's folder once the session is locked; it is a guardrail rather than a security boundary, and you may be asked to approve project hooks the first time. If you want accounts under version control, use a private repo and
-remove `accounts/*` from `.gitignore` there.
-
----
-
-### Install
-
-**Requirements**
-
-| For | You need |
-|---|---|
-| Everything | `git` and `python3` (3.8+, standard library only; no pip installs) |
-| Claude (primary) | Claude Desktop (Code tab) or the Claude Code CLI, signed in |
-| Pi (optional) | Node.js, tmux or iTerm2, and the Pi CLI (below) |
-
-**Set up a workspace**
+- Git and Python 3.8+ (standard library only; no package installation).
+- [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started),
+  signed in, supporting repository skills and native custom agents.
 
 ```bash
-git clone https://github.com/dtehan/leadership-team.git acme-leadership-team
-cd acme-leadership-team
-python3 scripts/accounts.py new acme   # create accounts/acme/ (git-ignored) from the template
-# optional: point it at your own private remote so nothing goes back to the template
-git remote set-url origin <your-private-repo-url>
+git clone https://dev.azure.com/danieltehan/Leadership/_git/Leadership
+cd Leadership
+copilot
 ```
 
-Skills are shared between runtimes: `.claude/skills/` contains symlinks into `.pi/skills/`.
-Symlinks work on macOS/Linux; on Windows enable Developer Mode and
-`git config core.symlinks true` before cloning.
+Review configuration before trusting it. Copilot
+loads [.github/copilot-instructions.md](.github/copilot-instructions.md),
+the skills under [.github/skills/](.github/skills/) and the
+[specialist agent](.github/agents/leadership-specialist.agent.md).
+Check `/instructions` and `/skills list` inside Copilot.
+`copilot instruction list --json` and `copilot skill list --json` show discovery
+from a terminal. The native specialist agent is invoked by evaluate, brainstorm or scope, not manually.
 
-**Claude Desktop / Claude Code**: nothing to install. Open the folder as the project
-(Desktop: Code tab → choose the folder; CLI: run `claude` from the repo root, **not** a subfolder).
-Claude loads `CLAUDE.md` and the skills automatically.
+**After updating, exit old sessions and start a fresh Copilot session.** Reloading
+skills alone does not reload instructions or hooks. Do not resume a pre-upgrade
+session. This repository supports Copilot CLI only; do not reinstall old Claude
+Code, Pi or Claude Desktop integrations.
 
-**Sending it to account managers (Claude Desktop, no Code tab):** run `python3 scripts/package.py`. It writes
-one zip per skill in `desktop-skill/` (brief builder, team, guest builder) plus `START-HERE.html`, all in `dist/`.
-Send them all. They upload each zip under Settings > Capabilities > Skills and make one Claude Project per customer.
-The guide's source is `docs/START-HERE.html`. For Claude Code users, `python3 scripts/package.py --code` builds the
-folder tool zip instead (no customer data, symlinks flattened).
+## One customer per session, multiple teams
 
-**Pi (secondary)**
+Each customer has a gitignored workspace under `accounts/<slug>/`. Explicitly select
+one account before accessing its content. Several teams in that account may be
+used in the same session. Use a fresh session for a different customer to
+avoid mixing context.
 
-```bash
-npm install -g @mariozechner/pi-coding-agent
-pi install npm:pi-subagents
-pi install npm:pi-teams
-```
+Account selection and isolation are **workflow guidance, not automatic
+enforcement or a security boundary**. There is no account-lock command, hook
+requirement or runtime session/parent ID dependency. Specialists receive the
+facilitator's explicit account, team and memory paths and cannot choose another
+customer. Do not rely on this repository for hostile-code isolation.
 
----
+Shared repository maintenance requires no account selection and must stay out of
+customer workspaces. Never commit account data or put it in shared prompts or the
+generic company template. Gitignored does not mean encrypted or local-only:
+Copilot processes supplied context and company research may use online sources.
+Follow organizational data-handling policies and use only authorized material.
 
-### Operate
+## Operate
 
-Work from the repo root. Everything below is a plain-language request; the skill noted
-runs automatically.
+### Populate profiles and define teams
 
-#### 1. Populate the account — `company-research`
+> "Work on Example Company. Create the account if needed and build its context."
+>
+> "Build the company profile, including researched profiles for its leadership."
+>
+> "Build a person profile for Alex Example, the database lead."
+>
+> "Show the available profiles."
+>
+> "Define core-leadership with the CEO as leader and CFO, CTO and COO as participants."
+>
+> "Define dba-team with Alex as leader, Sam and Jo as participants and the CTO as advisor."
 
-> *"Bootstrap Acme Corp."* — or *"Ingest this annual report"* (drop files in `accounts/<slug>/company/<area>/sources/`).
+**company-research** builds company knowledge and calls **person-profile** for
+each selected leader. **person-profile** is also available on its own for managers,
+specialists and any other professional role, without requiring team membership.
+It creates the dossier structure, researches public professional sources, records
+gaps and reuses existing people rather than creating duplicate profiles.
+**define-team** reuses
+profiles and confirms purpose, leader, participants, voting, optional synthetic
+perspectives and escalation. Thin evidence produces generic reasoning, not
+fabricated biography. A profile can lead one team and advise or vote in another.
+Only the selected team defines that assignment.
 
-It collects the 10-K/10-Q/proxy, technology decisions in place and under evaluation, strategy,
-and a dossier per leader; rebuilds the indexes; and lists the questions only you can answer
-(internal knowledge, relationships, politics). **The team refuses to convene on an empty
-account**: `accounts/<slug>/company/index.md` must be populated first.
+The profile helper's `new` command creates an unfinished scaffold, not a verified
+biography. Profiles with `evidence_status: pending`, `thin` or `generic` remain
+thin when teams resolve them. `grounded` is set only after reviewing evidence;
+structural checks do not certify research. Existing dossiers without this field
+continue to work unchanged. Refreshing existing real-person dossiers requires
+approval and never silently replaces the person behind a stable ID.
 
-Then confirm each role's real person: `accounts/<slug>/company/profiles/{leader,cfo,cto,coo}/index.md` should
-have `person:` and `title:` filled in.
+### Refresh research without starting over
 
-#### 2. Ask a question — `convene`
+> "Refresh the company research and its existing leadership profiles. Check for
+> updates and leave unchanged information alone."
+>
+> "Recheck Alex Example's current role and priorities using the existing profile."
 
-Either type it (*"Convene the team on: should we pitch a data-platform consolidation to the account
-this quarter?"*) or save a file in `accounts/<slug>/questions/`:
+Both research workflows inventory existing evidence before searching and share
+an account-local `company/sources/research-ledger.md`: sources, supported topics,
+last successful checks, comparison results and next checks. Repeated builds reuse
+coverage; explicit refreshes check the requested scope. Shared sources are fetched
+once per run, not again for every person. Historical filings are reused while
+discovery checks look for newer filings.
+
+Only supported differences change knowledge documents. Unchanged checks update
+the ledger, not profile prose, evidence dates or status. Failed checks are reported
+as incomplete, never "no change." Results distinguish reused, checked-unchanged
+and updated coverage and show material differences. Existing accounts adopt the
+ledger from their citations without rebuilding all research. These are agent
+workflow rules, not an automatic cache or a guarantee of source correctness.
+See the [incremental research contract](.github/skills/company-research/references/incremental-research.md)
+for default check intervals and evidence handling.
+
+### Evaluate a proposal with a named team
+
+> "Have dba-team evaluate the proposal to consolidate our database platforms."
+
+Or save a question under that team's `questions/`:
 
 ```yaml
-# accounts/<slug>/questions/data-platform-consolidation.yaml
-topic: Data platform consolidation pitch
-description: Should we pitch consolidating their data platforms to the CIO this quarter?
+account: example-company
+team: dba-team
+workflow: evaluate
+topic: Database consolidation
+description: Should we consolidate this year?
 background: |
-  Context, constraints, prior work, what we know about the buyer.
-urgency: medium          # low | medium | high  (optional)
-stakeholders: CIO, VP Data Engineering   # optional
-guests: [ciso]           # optional guest specialists (see step 4)
+  Describe the constraints, evidence and alternatives.
+urgency: medium
 ```
 
-Then: *"Process accounts/<slug>/questions/data-platform-consolidation.yaml."* The Leader frames the question,
-takes opening reactions from all specialists in parallel, runs several deliberation rounds,
-calls a final vote, decides, and writes the outputs. It takes a while; progress shows as it goes.
+For new questions, include `account:` matching the explicitly selected account
+and question path. Older questions without it remain usable after explicit
+account selection and path checks; a conflicting account requires clarification.
+Question metadata never changes the active account automatically.
 
-#### 3. Read the results
+**evaluate** requires explicit team selection. If absent, it asks; conflicts
+between a request and `team:` block until clarified. It never silently defaults
+to the former core team. Optional `attendees:` restricts participants, while the
+leader always attends. All membership and voting/advisor assignments come from
+the team definition. Advisors are participants with `vote: false`, not a separate
+guest category. Add specialists through **define-team**, or define another named
+team for a different room. Retired `guests:` input must be explicitly converted
+through an approved team update before it can run.
 
-| File | What it is |
+Advisors brief first, followed by opening reactions, at least four deliberation
+rounds, final positions and a decision addressing dissent. Participant votes,
+synthetic positions and advisor advice remain separate. The leader weighs
+arguments, not majority count; decisions beyond authority become recommendations.
+
+Copilot/user model defaults apply, with the orchestrator model inherited by every
+seat. Specialist dispatch omits a model selection, so it never pins or varies
+models between participants. One native
+[specialist agent](.github/agents/leadership-specialist.agent.md) simulates each
+seat with the supplied account scope. No per-person agent registration or team service is
+required. The built-in general-purpose agent is not a supported substitute.
+Costs are measured runtime values or `null`, never fabricated spending limits.
+
+### Brainstorm and prioritize ideas
+
+> "Brainstorm with dba-team: how could we improve database reliability?
+> Develop the ideas, then prioritize them."
+
+**brainstorm** is a separate workflow; **evaluate** keeps the existing decision
+format. It reuses the selected team's profiles, membership and context. Advisors
+brief first, everyone generates ideas independently, then the team develops and
+stress-tests them over at least two refinement rounds. Ideas retain stable IDs,
+assumptions and proposed next experiments, including lower-priority alternatives.
+
+Voting participants independently rank every idea against the framed criteria
+(default: impact, feasibility and evidence/confidence). Borda points summarize
+their preferences; advisors, synthetic perspectives and the leader are not tallied.
+The leader resolves ties and differences, explains departures and recommends a
+prioritized shortlist. These are exploration priorities, not spending or
+implementation approvals. At least one voting participant must attend.
+
+Structured input uses `workflow: brainstorm` with the existing account, team,
+topic, description and background fields; optional `priority_criteria` supplies
+comparison criteria. Outputs use a `-brainstorm` basename in the team's existing
+`decisions/` directory: idea/priorities memo, transcript and readable discussion.
+The same renderer and `--check` command validate brainstorm provenance,
+participation, refinement and rankings without imposing approve/deny votes.
+Incomplete brainstorms leave input pending and append no brainstorm memories.
+See the [brainstorm workflow](.github/skills/brainstorm/SKILL.md).
+
+The former **convene** workflow is now **evaluate**. Restart Copilot to load the
+renamed skill and routing. Existing questions and transcripts without `workflow:`
+remain decision records; legacy `workflow: convene` is accepted as evaluate.
+Historical outputs are not renamed or rewritten. Use `workflow: evaluate` for
+new decision questions.
+
+### Scope an idea and build a high-level plan
+
+> "We want to move forward with the reliability pilot. Have dba-team scope it and
+> build a high-level plan, including potential blockers and mitigation strategies."
+
+**scope** accepts a linked completed evaluation or explicit user direction to
+move an idea forward. A brainstorm ranking alone is not sufficient. It reuses
+the selected team, including advisors, without formal votes. Advisors brief
+first; everyone proposes boundaries, then at least two planning rounds develop
+phases, dependencies and blockers. Everyone reviews the draft before the leader
+synthesizes one combined scope-and-plan document.
+
+The outcome includes success measures, in/out of scope, deliverables, assumptions,
+constraints, high-level milestones/exit criteria, proposed owners and timing,
+risks, dissent, open questions and next steps. Every blocker has a mitigation
+strategy, a blocking gate, proposed owner and evidence/decision needed to clear it.
+Unverified mitigations do not resolve blockers; unknown estimates stay unknown.
+This is not a detailed task backlog or an implementation commitment.
+
+Outputs use `-scope` basenames under the team's `decisions/` directory. Readiness
+is `blocked` for an open start gate, `conditional` for open later-phase gates,
+or `ready_for_review` when none remain open. A complete discussion can produce
+a blocked plan. Incomplete discussions remain pending and append no scope memory.
+The existing renderer's `--check` validates recorded planning, final reviews,
+blocker fields and readiness consistency—not approval or mitigation effectiveness.
+See the [scope workflow](.github/skills/scope/SKILL.md) and
+[user guide](docs/USER-GUIDE.html#run) for structured input.
+
+### Read results and close the loop
+
+Under the account's `teams/<team>/`:
+
+| Output | Purpose |
 |---|---|
-| `accounts/<slug>/decisions/YYYY-MM-DD-{slug}.md` | Decision memo (read this first) |
-| `accounts/<slug>/decisions/YYYY-MM-DD-{slug}-discussion.md` | The whole debate, turn by turn |
-| `accounts/<slug>/decisions/YYYY-MM-DD-{slug}-transcript.json` | Verbatim record |
-| `accounts/<slug>/questions/done/` | The processed question |
+| `team.json` | Leader, participants, purpose, optional perspectives and escalation |
+| `questions/`, `questions/done/` | Pending and archived input |
+| `decisions/YYYY-MM-DD-<topic>.md` | Decision memo, rationale, dissent and next steps |
+| `decisions/*-scope.md` | Combined scope, high-level plan, blockers and mitigations |
+| `decisions/*-discussion.md` | Readable debate |
+| `decisions/*-transcript.json` | Verbatim record and frozen definition/effective room |
+| `memories/<archetype-id>.md` | Team-specific synthetic archetype memory, if configured |
 
-Re-render a discussion any time: `python3 scripts/render_transcript.py accounts/<slug>/decisions/<slug>-transcript.json`.
+Each person's discussion memory lives at
+`company/profiles/<profile-id>/memory.md` within the account, alongside their
+dossier and calibration. The same file follows them across teams as leader,
+voter or advisor; entries retain their original team and run reference.
+Only synthetic archetype memory stays team-local. Membership edits never rewrite
+past outputs or reset a person's memory. Episodic memory is not researched evidence
+and is excluded from company indexes and profile evidence checks.
+Re-render with `python3 scripts/render_transcript.py <transcript-path>`;
+named-team transcripts must include their team, leader and display-name snapshot.
+JSON input is not rewritten.
+Partial records render with an explicit incomplete-run warning.
+Before treating a run as complete, use
+`python3 scripts/render_transcript.py <transcript-path> --check`.
+This writes nothing and checks the selected workflow. For evaluate it fails for
+missing individual room identities, recorded responses, four numbered deliberation
+rounds, final advice/votes or a matching participant-only tally.
+Deliberation turns use `deliberation_round: 1`, `2`, etc.;
+the declared round count alone is not proof of debate. Incomplete runs keep their
+questions pending and must not be published as completed results.
 
-#### 4. Bring in a guest specialist — `add-specialist`
+> "Rerun that question with extended-leadership."
+>
+> "Record the outcome: the real team deferred until next quarter."
 
-> *"Add a head of security to this conversation."*
+Reruns use fresh input and output names. Prior memos/transcripts are withheld until
+the new decision is made, then compared. Eligible memory may mention the old run,
+so this is not a blind test. **record-outcome** calibrates supported real positions,
+including the historical leader and advisors; unknown positions remain unknown.
 
-You are interviewed (title, real person or generic, their lens, what context they need); the
-skill creates their agent (`.pi/agents/<slug>.md`), dossier (`accounts/<slug>/company/profiles/<slug>/`) and, if
-needed, a domain area such as `accounts/<slug>/company/security/`. Guests **advise but do not vote**, any
-number can join, and they are reusable. List them under `guests:` in a question, or let the
-Leader propose guests when a question needs them.
+## Existing workspaces
 
-#### 5. Rerun a question with a guest
+After updating, define each desired team explicitly using the account's existing
+profiles. There is no automatic import or alternate workspace fallback. New
+questions and decisions belong only to the selected team; person memory belongs
+to the reusable account-local profile.
+Existing customer files are not moved, rewritten or deleted by the update.
 
-> *"Rerun the data-platform question with the CISO attached."*
+Rendering and outcome recording require complete named-team records; files without
+the required team identity/snapshot are not automatically interpreted or converted.
 
-The original question and decision stay untouched. The rerun is a fresh, independent
-deliberation with its own memo (`…-with-ciso`), and the memo compares it with the original.
+## Shared repository layout
 
-#### 6. Teach the team — `record-outcome`
-
-When you learn what the real team decided or how it played out:
-
-> *"Record the outcome for the data-platform decision: the account actually deferred it to Q2."*
-
-Each twin is scored against reality and a `calibration.md` in their dossier is updated; twins
-load it on every future run. Run it against reruns too to see whether a guest improved accuracy.
-
-#### 7. Fill gaps
-
-Twins flag facts they needed and lacked in `accounts/<slug>/company/gaps.md`. *"Work through accounts/<slug>/company/gaps.md."*
-runs `company-research` against that list.
-
-#### 8. Working groups (middle management) — `define-group`, `convene-group`
-
-Quick start: [docs/GROUPS-USER-GUIDE.md](docs/GROUPS-USER-GUIDE.md).
-
-A **group** is any team you define inside an account (data platform leads, regional directors, a
-change board). It does not replace the leadership team; it is a second room with its own cast.
-It lives at `accounts/<slug>/groups/<group>/` and has its own `roster.md`, `questions/`,
-`decisions/` and `memories/`. It shares the account's `company/` knowledge and the same
-one-account-per-session lock.
-
-> *"Define a group called data-platform for this account. Priya Nair, Director of Data Engineering,
-> reports to the CTO and chairs it; Sam Ortiz, Head of Procurement; Lee Chen, Security Manager, as an advisor."*
-
-- **Who is in the group** is `roster.md`: purpose, chair (a member, or `neutral`), who the group
-  escalates to, an optional Contrarian/Moonshot, and one row per member. A member marked
-  advisor speaks but does not vote.
-- **Linking profiles**: each row has a `profile` link. Blank means `company/profiles/<member>/` (a stub
-  is created for you to research); or point at an existing dossier folder or file inside the
-  account, or a URL. `python3 scripts/groups.py check <slug> <group>` shows the roster and which
-  profiles are thin. Twins with thin profiles are generic, so research them with `company-research`.
-- **Ask a question**: *"Convene the data-platform group on: …"* or save a file in
-  `accounts/<slug>/groups/<group>/questions/`. It takes the same format as a leadership question, plus an
-  optional `attendees: [priya-nair, sam-ortiz]` to call only some members.
-- **Results** appear in `accounts/<slug>/groups/<group>/decisions/`. The memo says whether the group
-  decided or is recommending escalation, and what the decision asks of each team.
-- **Teach it**: *"Record the outcome for the data-platform group's decision: …"* (`record-group-outcome`).
-
-Management groups do not include the C-suite twins. A member's `reports_to` (e.g. `cto`) only
-shapes how that member thinks, since they read that executive's dossier summary.
-
-#### Maintenance
-
-| Task | How |
+| Path | Purpose |
 |---|---|
-| Rebuild indexes after editing anything in `accounts/<slug>/company/` | `python3 scripts/build_index.py <slug>` |
-| Check documents have summaries/front-matter | `python3 scripts/build_index.py <slug> --check` |
-| Update a document's context | Edit it (keep the front-matter), rebuild indexes |
-| Retire a guest | Delete `.pi/agents/<slug>.md` (keep or remove its dossier and memory) |
-| Reset what the team has learned | Clear `accounts/<slug>/memories/` and `accounts/<slug>/company/profiles/*/calibration.md` |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Routing and invariants |
+| [.github/skills/](.github/skills/) | Team definition, evaluation, brainstorming, outcomes and context workflows |
+| [.github/agents/leadership-specialist.agent.md](.github/agents/leadership-specialist.agent.md) | Scoped native seat agent |
+| [.github/skills/evaluate/references/](.github/skills/evaluate/references/) | Generic team leader/participant prompts |
+| [company-template/](company-template/) | Generic knowledge skeleton, no customer facts |
+| [scripts/teams.py](scripts/teams.py) | Definitions, profile discovery, validation and room resolution |
+| [scripts/](scripts/) | Account/team helpers, indexing, rendering and packaging |
+| [tests/](tests/) | Disposable synthetic fixtures, never real customer data |
 
-#### Using Pi instead
+Company context loads progressively: brief, profile/area indexes, relevant docs.
+After company-document edits, rebuild and check the active account's indexes with
+`scripts/build_index.py`.
 
-Same files and skills. Agents are in `.pi/agents/`; `leadership.yaml` defines the core team.
+## Validate and distribute
 
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
+python3 scripts/package.py
 ```
-pi                                   # start in iTerm2/tmux from the repo root
-/login                               # connect your model provider
-create my team named 'leadership' from the 'leadership.yaml' template.
-send a message to the leader specialist with the following content: accounts/<slug>/questions/<file>.yaml
-close down the team                  # when done
-```
 
-Other skills (`company-research`, `add-specialist`, `record-outcome`) are used by asking Pi in
-plain language. **Limitations on Pi:** the team template is fixed to the core roles, so guests
-must be started ad hoc by name (they are not in `leadership.yaml`); the Leader
-(`.pi/agents/leader.md`) will message them if asked. Claude is the better-tested path.
+Packaging builds one workspace ZIP in `dist/`; `--output-dir <path>` selects a
+destination outside customer workspaces. The old `--code` flag is rejected.
+Packaging uses an explicit allowlist, never traverses customer data, rejects
+symlinks and excludes local state and unrelated files. Review shared Markdown
+before distribution; only generic content belongs there.
 
----
+Tests cover definitions, overlapping profiles and cross-team memory paths/imports,
+memory exclusion from knowledge indexes, explicit selection, advisors,
+subsets, account setup without runtime locks, team-only account layout, frozen-room rendering,
+invalid transcript rejection and packaged workspaces. They do **not** run model deliberations.
+Live simulations use the configured model and consume credits.
 
-### How it works
+The named-team workflow is not live-model certified by these tests. The live
+advisor/rerun/outcome/session-lifecycle matrix remains uncertified.
+Validate fresh-session discovery, specialist scope and
+representative workflows in a disposable fictional project after CLI changes.
 
-```
- accounts/<slug>/company/ (what they know)  ──►  convene  ──►  accounts/<slug>/decisions/  ──►  record-outcome
-   progressive, indexed          core five +      memo,            calibration.md,
-   brief → area → document       CEO leader       discussion       accounts/<slug>/memories/, gaps.md
-        ▲                        (+ guests)                            │
-        └────────────── company-research fills gaps ◄──────────────────┘
-```
+## Troubleshooting
 
-#### The account background — `accounts/<slug>/company/`
-
-| Folder | Holds |
+| Symptom | Action |
 |---|---|
-| `index.md` | **L0**: account brief + map of areas. Always loaded. |
-| `financial/` | 10-K/10-Q summaries, earnings themes, segments, capital allocation |
-| `technical/` | Technology decisions in place, what is being evaluated, vendors, architecture |
-| `strategy/` | Stated priorities, market, competitors, regulatory pressure |
-| `profiles/{leader,cfo,cto,coo}/` | A dossier per real executive: `persona.md`, bio, talks, interviews, `calibration.md` |
-| `profiles/{moonshot,contrarian}/` | Account-specific angles for the two archetype roles |
-| `profiles/<guest>/` | Guest specialists (`type: guest` in their `index.md`) |
-| `gaps.md` | Facts the twins needed and didn't have |
-| `_templates/` | Document templates (persona, financial, general) |
-
-Every folder has an `index.md` (**L1**) listing its documents with summary, tags, date,
-confidence and which roles should load it. Twins read L0, their own dossier, then only the
-documents the question needs (**L2**); see `.pi/skills/profile-context/SKILL.md`. Documents
-need front-matter with at least a `summary`; see `accounts/<slug>/company/_templates/`.
-
-#### Skills
-
-| Skill | Purpose |
-|---|---|
-| `convene` *(Claude)* / `leader` agent *(Pi)* | Run the deliberation |
-| `profile-context` | Progressive context loading, for leader and every specialist |
-| `company-research` | Populate/extend `accounts/<slug>/company/`: bootstrap, ingest files, fill gaps, refresh |
-| `add-specialist` | Introduce a guest specialist |
-| `record-outcome` | Compare reality to the twins, write calibration |
-| `memory-management` | Each twin's own decision memory and peer patterns |
-| `define-group` | Define a working group: roster, chair, escalation, linked member profiles |
-| `convene-group` | Run a deliberation for a defined group (same flow as `convene`) |
-| `record-group-outcome` | Compare reality to a group's twins, write calibration |
-| `decision-input`, `memo-format` | Question and memo formats |
-
-#### Directories
-
-| Directory | Purpose |
-|---|---|
-| `accounts/<slug>/company/` | Account knowledge, **git-ignored** (read-only to twins; written only by `company-research` and `record-outcome`) |
-| `company-template/` | Generic skeleton copied to `accounts/<slug>/company/` on setup (tracked) |
-| `accounts/<slug>/questions/`, `accounts/<slug>/questions/done/` | Pending and processed questions |
-| `accounts/<slug>/decisions/` | Memos, transcripts, discussions, outcomes |
-| `accounts/<slug>/memories/` | Per-role episodic memory (created as the team runs) |
-| `accounts/<slug>/groups/<group>/` | A working group: `roster.md`, `questions/`, `decisions/`, `memories/` |
-| `scripts/` | `accounts.py` (list/new/lock), `groups.py` (list/new/add/link/check), `account_guard.py` (session-lock hook), `build_index.py <slug>`, `render_transcript.py` |
-| `.pi/agents/`, `.pi/skills/` | Role prompts and shared skills (`group-chair.md` and `group-member.md` are the generic group seats) |
-| `.claude/skills/` | `convene` plus symlinks to the shared skills |
-
----
-
-### Troubleshooting
-
-| Symptom | Cause / fix |
-|---|---|
-| `accounts/<slug>/company/` doesn't exist | Run `python3 scripts/accounts.py new <slug>`, then `company-research`. |
-| Team says the account has no context | `accounts/<slug>/company/index.md` is still the template. Run `company-research`. |
-| Twins sound generic | Dossiers are thin or `person:` is `TBD`. Add `persona.md` and sources; check `accounts/<slug>/company/gaps.md`. |
-| A skill isn't found in Claude | You opened a subfolder, or symlinks didn't survive the clone (see Install). |
-| New documents aren't being used | Indexes are stale. `python3 scripts/build_index.py <slug>`. |
-| Guest not available | Needs `.pi/agents/<slug>.md` and `accounts/<slug>/company/profiles/<slug>/`. Run `add-specialist`. |
-| Group twins sound generic | Member profiles are stubs or bare links. Run `python3 scripts/groups.py check <slug> <group>`, then `company-research` on those members. |
-| `No group '<group>'` | Create it with `python3 scripts/groups.py new <slug> <group>` or run `define-group`. |
-| Can't add a member called `cfo` (or `cto`, `coo`, ...) | Leadership role names are reserved. Use the person's name as the slug, e.g. `priya-nair`. |
-
-
+| Skill missing or listed twice | Restart at the repository root; inspect `/skills list` and remove obsolete user registrations |
+| Old account-lock messages after updating | Start a fresh session to unload cached instructions and hook registration; no lock command is needed |
+| Specialist unavailable | Start a fresh session; do not substitute a general-purpose agent |
+| Need a different customer | Start a fresh session to avoid mixing account context |
+| Unexpected access denial | Stop and preserve the error; do not disable hooks or retry via another tool |
+| Team missing or invalid | Use define-team, check the selected slug and resolve validation errors |
+| No company context or generic twins | Use company-research to fill the brief and relevant dossiers |
+| New company documents missing | Rebuild/check indexes for the active account |
+| Advisor unavailable | Use person-profile to set up/reuse their profile, then define-team to add them with `vote: false` |
